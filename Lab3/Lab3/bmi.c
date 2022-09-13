@@ -6,27 +6,7 @@
 * Description: Calculate your body mass index (BMI).
 *******************************************************************************************/
 
-/*
-	Interesting note about guard headers, I learned from this Stack Overflow post that
-	NASA's Goddard Space Flight Center maintains a rule set for header files that states
-	they must be:
-	- Self Contained: All needed types are defined, and includes needed relevant headers
-	- Idempotent: In other words, if it gets called twice, it won't break anything
-	- Minimal: Doesn't include unnecessary code for it's particular outcomes.
-
-	SO Link: https://stackoverflow.com/questions/1804486/should-i-use-include-in-headers
-*/
-
-// Header guard to ensure that our code is only included once by the compiler
-#ifndef BMI_H_
-
-#define BMI_H_
-#define _CRT_SECURE_NO_WARNINGS // Suppress scanf memory security warnings
-
-#include <stdio.h> // Include our standard functions for interacting with the IO stream
-#include <math.h> // Used to get access to pow function
-
-// The following are the custom functions to solve the problem of calculating BMI
+#include "bmi.h"
 
 /*
    Function: get_weight(void)
@@ -36,7 +16,12 @@
    Precondition: The stdio library has been included
    Postconditions: The users weight has been returned
 */
-double get_weight(void);
+double get_weight() {
+	double weight = 0.0;
+	printf("Please enter your weight in pounds: ");
+	scanf(" %lf", &weight);
+	return weight;
+}
 
 /*
    Function: get_height(void)
@@ -46,7 +31,12 @@ double get_weight(void);
    Precondition: The stdio library has been included
    Postconditions: The users height has been returned
 */
-double get_height(void);
+double get_height() {
+	double height = 0.0;
+	printf("Please enter your height in feet: ");
+	scanf(" %lf", &height);
+	return height;
+}
 
 /*
    Function: convert_feet_to_inches(double height_in_feet)
@@ -56,7 +46,12 @@ double get_height(void);
    Precondition: The actual parameter is not null
    Postconditions: Feet has been converted to inches
 */
-double convert_feet_to_inches(double height_in_feet);
+double convert_feet_to_inches(double height_in_feet) {
+	// A double is returned here even though we are multiplying by in int
+	// because C promotes the result of this operation to a double because
+	// height_in_feet is of the type double.
+	return height_in_feet * 12;
+}
 
 /*
    Function: calculate_bmi(double weight_in_pounds, double height_in_feet)
@@ -66,7 +61,11 @@ double convert_feet_to_inches(double height_in_feet);
    Precondition: Weight and Height were already gathered
    Postconditions: A BMI score was returned
 */
-double calculate_bmi(double weight_in_pounds, double height_in_feet);
+double calculate_bmi(double weight_in_pounds, double height_in_feet) {
+	// Formula requires height in inches, so we convert it from feet to inches first!
+	double height_in_inches = convert_feet_to_inches(height_in_feet);
+	return (weight_in_pounds / pow(height_in_inches, 2)) * 703;
+}
 
 /*
    Function: display_bmi_scale(void)
@@ -76,7 +75,13 @@ double calculate_bmi(double weight_in_pounds, double height_in_feet);
    Precondition: The stdio library has been included
    Postconditions: The BMI scale has been printed to the console
 */
-void display_bmi_scale(void);
+void display_bmi_scale() {
+	printf("\nBMI Scale:\n");
+	printf("BMI of less than 18 indicates you are underweight\n");
+	printf("BMI >= 18 and < 25 means you are at a healthy weight\n");
+	printf("BMI >= 25 and < 30 means you are overweight\n");
+	printf("BMI > 30 indicates obesity\n\n");
+}
 
 /*
    Function: display_bmi(double bmi)
@@ -86,6 +91,6 @@ void display_bmi_scale(void);
    Precondition: The stdio library has been included
    Postconditions: The inputted BMI score has been printed to console
 */
-void display_bmi(double bmi);
-
-#endif
+void display_bmi(double bmi) {
+	printf("Your BMI is %.2lf", bmi); // Truncate the score to 2 decimal places for brevity
+}
