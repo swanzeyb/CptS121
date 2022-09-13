@@ -1,0 +1,4 @@
+﻿  main.c
+C:\Users\Corefinder\source\cpts121\PA2\PA2\main.c(28,39): warning C4047: 'function': 'const char *' differs in levels of indirection from 'int'
+C:\Users\Corefinder\source\cpts121\PA2\PA2\main.c(28,36): warning C4024: 'fopen': different types for formal and actual parameter 2
+  PA2.vcxproj -> C:\Users\Corefinder\source\cpts121\PA2\x64\Debug\PA2.exe
