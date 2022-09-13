@@ -21,9 +21,15 @@
     <ClCompile Include="bmi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="projectile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bmi.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="projectile.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
