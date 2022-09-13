@@ -1,4 +1,0 @@
-﻿  main.c
-C:\Users\Corefinder\source\cpts121\MoreCPractice\MoreCPractice\main.c(21,9): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'int'
-C:\Users\Corefinder\source\cpts121\MoreCPractice\MoreCPractice\main.c(21,9): warning C4313: 'printf': '%s' in format string conflicts with argument 1 of type 'int'
-  MoreCPractice.vcxproj -> C:\Users\Corefinder\source\cpts121\MoreCPractice\x64\Debug\MoreCPractice.exe
