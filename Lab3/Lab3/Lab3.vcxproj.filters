@@ -24,12 +24,18 @@
     <ClCompile Include="projectile.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="scores.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bmi.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="projectile.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scores.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

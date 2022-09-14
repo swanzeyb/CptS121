@@ -11,6 +11,7 @@
 
 #include "bmi.h"
 #include "projectile.h"
+#include "scores.h"
 
 int main() {
 	// --- Calculate your body mass index (BMI). ---
@@ -53,6 +54,28 @@ int main() {
 
 	// --- Prompt the user for the scores received on two exams, two labs, and two projects and then compute separate averages for the exams, labs, and project. ---
 	printf("\n\n*** Compute the averages for two exams, labs, and projects ***\n\n");
+
+	// Ask the user for their exams, labs, and projects
+	int exam1_score = get_score("exam", 1);
+	int exam2_score = get_score("exam", 2);
+	int lab1_score = get_score("lab", 1);
+	int lab2_score = get_score("lab", 2);
+	int project1_score = get_score("project", 1);
+	int project2_score = get_score("project", 2);
+
+	// Calculate the average of each assignment depending on their assignment type
+	double exam_avg = calculate_average(exam1_score, exam2_score);
+	double lab_avg = calculate_average(lab1_score, lab2_score);
+	double project_avg = calculate_average(project1_score, project2_score);
+
+	// Calculate the weighted average aftering calculating individual assignment averages
+	double weighted_avg = calculate_weighted_average(exam_avg, lab_avg, project_avg, 0.3, 0.05, 0.15);
+
+	// These scores only account for 50% of the grade, so this puts it in terms of out of 100%
+	weighted_avg = (weighted_avg / 50.0) * 100;
+
+	// Display to the user their weighted average
+	display_weighted_average(weighted_avg);
 
 	// Tell the system the program executed successfully
 	return 0;

@@ -130,10 +130,12 @@
     <ClCompile Include="bmi.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="projectile.c" />
+    <ClCompile Include="scores.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bmi.h" />
     <ClInclude Include="projectile.h" />
+    <ClInclude Include="scores.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

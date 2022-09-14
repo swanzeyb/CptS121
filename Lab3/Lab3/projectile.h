@@ -68,7 +68,7 @@ double calculate_projectile_height(double velocity, double theta, double time);
 /*
    Function: display_flight_duration(double duration)
    Description: Prints the time the projectile has been in flight.
-   Input Parameters: None.
+   Input Parameters: The flight duration of the projectile.
    Returns: None.
    Precondition: Flight duration has been calculated.
    Postconditions: The projectile's flight duration has been printed to the console.
@@ -78,7 +78,7 @@ void display_flight_duration(double duration);
 /*
    Function: display_projectile_height(double height)
    Description: Prints the height of the projectile.
-   Input Parameters: None.
+   Input Parameters: The height of the projectile.
    Returns: None.
    Precondition: The projectile's height has been calculated.
    Postconditions: The projectile's height has been printed to the console.
