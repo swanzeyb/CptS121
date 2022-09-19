@@ -11,7 +11,8 @@
         "-g",
         "${file}",
         "-o",
-        "${fileDirname}/${fileBasenameNoExtension}"
+        "${fileDirname}/${fileBasenameNoExtension}",
+        "${fileDirname}/equations.c",
       ],
       "options": {
         "cwd": "${fileDirname}"
