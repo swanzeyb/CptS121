@@ -70,5 +70,5 @@ double find_min(double num1, double num2, double num3, double num4, double num5)
 }
 
 void print_double(FILE *outfile, double num) {
-  fprintf(outfile, "%lf", num);
+  fprintf(outfile, "%.2lf\n", num);
 }
