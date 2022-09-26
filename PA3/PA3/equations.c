@@ -49,7 +49,7 @@ double calculate_standard_deviation(double variance) {
 
 double find_max(double num1, double num2, double num3, double num4, double num5) {
   double needle = 0.0;
-  double haystack[] = { num1, num2, num3, num4, num5 };
+  double haystack[5] = { num1, num2, num3, num4, num5 };
   for (int i = 0; i < 5; i += 1) {
     if (haystack[i] > needle) {
       needle = haystack[i];
@@ -60,7 +60,7 @@ double find_max(double num1, double num2, double num3, double num4, double num5)
 
 double find_min(double num1, double num2, double num3, double num4, double num5) {
   double needle = num1;
-  double haystack[] = { num1, num2, num3, num4, num5 };
+  double haystack[5] = { num1, num2, num3, num4, num5 };
   for (int i = 0; i < 5; i += 1) {
     if (haystack[i] < needle) {
       needle = haystack[i];
