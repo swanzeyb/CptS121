@@ -9,6 +9,7 @@
 #include "game.h"
 
 int main() {
+	print_game_rules();
 
 	// Tell the system the program executed successfully
 	return 0;
