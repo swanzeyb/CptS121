@@ -1,121 +1,50 @@
 /*******************************************************************************************
 * Programmer: Benjamin Swanzey <benjamin.swanzey@wsu.edu>
 * Class: CptS 121, Fall 2022; Lab Section 1
-* Programming Assignment: PA3
-* Date: September 19th, 2022
-* Description: A program that processes numbers, corresponding to student records read in from a file,
-*              and writes the required results to an output file.
+* Programming Assignment: PA4
+* Date: October 7th, 2022
+* Description: Write a program that implements a craps game that allows for wagering.
 *******************************************************************************************/
 
 // Header guard to ensure that our code is only included once by the compiler
-#ifndef EQUATIONS_H
+#ifndef GAME_H
 
 // Define contstants
-#define EQUATIONS_H
+#define GAME_H
 #define _CRT_SECURE_NO_WARNINGS // To ignore scanf warning
 
 // The required libraries
 #include <stdio.h> // Include our standard functions for interacting with the IO stream
 #include <math.h> // Used to get access to pow, sqrt, fmod function
 
-/*
-   Function: read_double(FILE *infile)
-   Description: Reads the next double for a given file.
-   Input Parameters: The file to read from.
-   Returns: The double found in the file stream.
-   Precondition: The file is open in read mode.
-   Postconditions: A found double has been returned.
-*/
-double read_double(FILE *infile);
+//Prints out the rules of the game of "craps".
+void print_game_rules (void);
 
-/*
-   Function: read_integer(FILE *infile)
-   Description: Reads the next integer for a given file.
-   Input Parameters: The file to read from.
-   Returns: The integer found in the file stream.
-   Precondition: The file is open in read more.
-   Postconditions: A found integer has been returned.
-*/
-int read_integer(FILE *infile);
+// Prompts the player for an initial bank balance from which wagering will be added or subtracted.
+double get_bank_balance (void);
 
-/*
-   Function: calculate_sum(double num1, double num2, double num3, double num4, double num5)
-   Description: Adds all 5 input doubles together.
-   Input Parameters: 5 double values.
-   Returns: The sum of all input doubles.
-   Precondition: Have 5 doubles to add together.
-   Postconditions: The sum has been returned.
-*/
-double calculate_sum(double num1, double num2, double num3, double num4, double num5);
+// Prompts the player for a wager on a particular roll.
+double get_wager_amount (void);
 
-/*
-   Function: calculate_mean(double sum, int num)
-   Description: Finds the average of a sum and the number of items.
-   Input Parameters: The sum and the number of items in the avg.
-   Returns: The average of the items.
-   Precondition: The number of items are known.
-   Postconditions: The average has been returned.
-*/
-double calculate_mean(double sum, int num);
+// Checks to see if the wager is within the limits of the player's available balance.
+int check_wager_amount (double wager, double balance);
 
-/*
-   Function: calculate_deviation(double num, double mean)
-   Description: Finds the deviation of the number from the mean.
-   Input Parameters: A number to find the deviation of and the mean.
-   Returns: The number's deviation from mean.
-   Precondition: The mean of the values has been found
-   Postconditions: The number's deviation has been returned.
-*/
-double calculate_deviation(double num, double mean);
+// Rolls one die. This function should randomly generate a value between 1 and 6, inclusively.
+int roll_die (void);
 
-/*
-   Function: calculate_variance(double deviation1, double deviation2, double deviation3, double deviation4, double deviation5, int num)
-   Description: Calculates the variance of 5 input numbers.
-   Input Parameters: The 5 values to find the variance of.
-   Returns: The variance between the items.
-   Precondition: The variance of the 5 values is known.
-   Postconditions: The variance has been returned.
-*/
-double calculate_variance(double deviation1, double deviation2, double deviation3, double deviation4, double deviation5, int num);
+// Sums together the values of the two dice and returns the result
+int calculate_sum_dice (int die1_value, int die2_value);
 
-/*
-   Function: calculate_standard_deviation(double variance)
-   Description: Calculates the standard deviation given a variance.
-   Input Parameters: The variance between values to calculate deviation of.
-   Returns: The standard variation between the values.
-   Precondition: The variance has been calculated.
-   Postconditions: The standard deviation has been returned.
-*/
-double calculate_standard_deviation(double variance);
+// Determines the result of the first dice roll.
+int is_win_loss_or_point (int sum_dice);
 
-/*
-   Function: find_max(double num1, double num2, double num3, double num4, double num5)
-   Description: Finds the largest number given 5 values.
-   Input Parameters: 5 numbers to search through.
-   Returns: The largest number of the input values.
-   Precondition: There are 5 values to compare.
-   Postconditions: The largest number has been returned.
-*/
-double find_max(double num1, double num2, double num3, double num4, double num5);
+// Determines the result of any successive roll after the first roll.
+int is_point_loss_or_neither (int sum_dice, int point_value);
 
-/*
-   Function: find_min(double num1, double num2, double num3, double num4, double num5)
-   Description: Finds the smallest number given 5 values.
-   Input Parameters: 5 numbers to search through.
-   Returns: The smallest number of the input values.
-   Precondition: There are 5 values to compare.
-   Postconditions: The smallest number has been returned.
-*/
-double find_min(double num1, double num2, double num3, double num4, double num5);
+// Modifies the bank balance.
+double adjust_bank_balance (double bank_balance, double wager_amount, int add_or_subtract);
 
-/*
-   Function: print_double(FILE *outfile, double num)
-   Description: Prints a double to a file.
-   Input Parameters: The file to write to, and the number to write.
-   Returns: Nothing.
-   Precondition: The file is open is write mode.
-   Postconditions: A number has been written to the file.
-*/
-void print_double(FILE *outfile, double num);
+// Prints a message dependent on the number of rolls taken by the player.
+void chatter_messages (int number_rolls, int win_loss_neither, double initial_bank_balance, double current_bank_balance);
 
 #endif
