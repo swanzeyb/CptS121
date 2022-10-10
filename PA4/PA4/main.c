@@ -23,7 +23,7 @@ void display_main_menu() {
 	printf("2. Craps Rules\n");
 	printf("3. Bank Balance\n");
 	printf("4. Exit\n");
-	printf("Choose an options by pressing the menu number\n");
+	printf("\nChoose by entering a menu number\n");
 }
 
 // This method allows us to dynamically start
@@ -39,17 +39,14 @@ void goto_scene(void (*scene)(int)) {
 	// Begin reading user value
 	while (continue_scene == 1) {
 		// Give the option for the user to leave the scene
-		printf("Press 0 to go back.\n");
+		printf("\nPress 0 to go back.\n");
 		current_input = get_menu_key();
 
-		printf("now eval... %d\n", current_input);
 		if (current_input == 0) {
-			printf("exit the game...\n");
 			continue_scene = 0;
 		} else {
 			// Call the scene with the updated state
-			// clear_terminal();
-			printf("update the scene...\n");
+			clear_terminal();
 			(*scene)(current_input);
 		}
 	}
@@ -62,13 +59,10 @@ int main() {
 	int continue_game = 1;
 	int current_menu = -1;
 
-	// Start by showing the main menu
-	clear_terminal();
-	display_main_menu();
-
 	// Now wait for user's input
 	while (continue_game == 1) {
 		clear_terminal();
+		display_main_menu();
 		current_menu = get_menu_key();
 
 		switch(current_menu) {
@@ -79,11 +73,11 @@ int main() {
 				goto_scene(rules_scene);
 				break;
 			case 4:
-				return 0;
+				continue_game = 0;
 				break;
 			default:
-				printf("Defaulting...\n");
-				display_main_menu();
+				// display_main_menu();
+				printf("default case...");
 		}
 	}
 

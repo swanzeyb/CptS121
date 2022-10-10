@@ -18,7 +18,7 @@ void clear_terminal() {
   #elif _WIN32
     system("cls");
   #elif __APPLE__
-    // system("clear");
+    system("clear");
   #endif
 }
 
