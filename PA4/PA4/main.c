@@ -7,6 +7,7 @@
 *******************************************************************************************/
 
 #include "game.h"
+#include "bank.h"
 
 int get_menu_key() {
 	int key = 0;
@@ -52,34 +53,38 @@ void goto_scene(void (*scene)(int)) {
 	}
 }
 
-// Implement a navigation stack to manage game levels
-// using linked lists for dynamically sized browsing stacks
-
 int main() {
 	int continue_game = 1;
 	int current_menu = -1;
 
-	// Now wait for user's input
-	while (continue_game == 1) {
-		clear_terminal();
-		display_main_menu();
-		current_menu = get_menu_key();
+	Checking bank_account;
+	create_checking(&bank_account, 118.26);
+	printf("bal: %.2lf\n", read_checking(&bank_account));
+	update_checking(&bank_account, 2.00);
+	update_checking(&bank_account, -3.01);
+	printf("bal: %.2lf\n", read_checking(&bank_account));
 
-		switch(current_menu) {
-			case 1:
-				goto_scene(game_scene);
-				break;
-			case 2:
-				goto_scene(rules_scene);
-				break;
-			case 4:
-				continue_game = 0;
-				break;
-			default:
-				// display_main_menu();
-				printf("default case...");
-		}
-	}
+	// Now wait for user's input
+	// while (continue_game == 1) {
+	// 	clear_terminal();
+	// 	display_main_menu();
+	// 	current_menu = get_menu_key();
+
+	// 	switch(current_menu) {
+	// 		case 1:
+	// 			goto_scene(game_scene);
+	// 			break;
+	// 		case 2:
+	// 			goto_scene(rules_scene);
+	// 			break;
+	// 		case 4:
+	// 			continue_game = 0;
+	// 			break;
+	// 		default:
+	// 			// display_main_menu();
+	// 			printf("default case...");
+	// 	}
+	// }
 
 	// Tell the system the program executed successfully
 	return 0;
