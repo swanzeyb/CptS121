@@ -3,15 +3,14 @@
   "configurations": [
     {
       // MacOS
-      "name": "Launch Program(lldb)",
-      "type": "cppdbg",
+      "name": "Build & Launch",
+      "type": "lldb",
       "request": "launch",
       "program": "${workspaceRoot}/${workspaceFolderBasename}/a.out",
-      "stopAtEntry": false,
-      "cwd": "${workspaceRoot}",
-      "environment": [],
-      "externalConsole": true,
-      "MIMode": "lldb"
+      "cwd": "${workspaceRoot}/${workspaceFolderBasename}",
+      // Ignore debug output garbage: !Loaded '/, !Warning, !=thread, !=library
+      "terminal": "external",
+      "preLaunchTask": "${defaultBuildTask}"
     }
   ]
 }

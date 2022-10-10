@@ -3,17 +3,19 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "Build C with Clang",
+      "label": "build",
       "command": "/usr/bin/clang",
       "args": [
-        // "-std=c++17",
-        // "-stdlib=libc++",
-        // "${file}",
-        "*.c",
+        "${workspaceFolder}/${workspaceFolderBasename}/*.c",
         "-o",
-        "a.out",
-        "-debug",
+        "${workspaceFolder}/${workspaceFolderBasename}/a.out",
+        "-g",
+        "-O0"
       ],
+      "presentation": {
+        "reveal": "silent",
+        "clear": true
+      },
       "group": {
         "kind": "build",
         "isDefault": true
