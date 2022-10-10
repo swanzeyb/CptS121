@@ -43,6 +43,7 @@ double create_checking(Checking *account, double deposit) {
   // the struct Checking. This lets us set the inital
   // bank account balance here.
   account->balance = deposit;
+  account->has_setup = 1;
   save_account(account); // Update on disk
   return deposit;
 }
