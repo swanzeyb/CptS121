@@ -9,6 +9,7 @@
       "program": "${workspaceRoot}/${workspaceFolderBasename}/a.out",
       "cwd": "${workspaceRoot}/${workspaceFolderBasename}",
       // Ignore debug output garbage: !Loaded '/, !Warning, !=thread, !=library
+      "env": { "TERM": "xterm" },
       "terminal": "external",
       "preLaunchTask": "${defaultBuildTask}"
     }
