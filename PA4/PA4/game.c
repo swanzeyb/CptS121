@@ -43,13 +43,13 @@ void display_main_menu() {
 
 // This method allows us to dynamically start
 // any game scene and enable user navigation
-void goto_scene(void (*scene)(int)) {
+void goto_scene(int (*scene)(int)) {
 	int continue_scene = 1;
 	int current_input = -1;
 
 	// Start the scene with a garbage state
 	clear_terminal();
-	(*scene)(current_input);
+	continue_scene = (*scene)(current_input);
 
 	// Begin reading user value
 	while (continue_scene == 1) {
@@ -62,7 +62,7 @@ void goto_scene(void (*scene)(int)) {
 		} else {
 			// Call the scene with the updated state
 			clear_terminal();
-			(*scene)(current_input);
+			continue_scene = (*scene)(current_input);
 		}
 	}
 }
@@ -100,35 +100,79 @@ void display_game_rules() {
   printf(" - If a 7 is rolled before the point, all pass line bets will lose and all don't pass bets will win instead.\n");
 }
 
-void rules_scene(int input) {
+int rules_scene(int input) {
   // Normally in a scene, the input would be evaluated.
   // But since we're just showing the rules, there's
   // no interactivity to this scene, so just print
   // the game rules.
   display_game_rules();
+
+  return 1;
 }
 
-void game_scene(int input) {
-  printf("Game not implemented yet\n");
-}
-
-void check_bank_scene(int input) {
+int create_bank_scene(int input) {
   Checking account = read_account();
+  printf("Bank account has not been setup\n");
+  double deposit = 0.0;
+  printf("To set up an account,\n");
+  printf("please enter an account deposit amount: ");
+  scanf(" %lf", &deposit);
+  double new_bal = update_checking(&account, deposit);
+  printf("\nYour new account balance is $%.2lf\n", new_bal);
 
+  return 0;
+}
+
+int read_bank_scene(int input) {
+  Checking account = read_account();
+  printf("Bank balance: $%.2lf\n", account.balance);
+
+  return 0;
+}
+
+int check_bank_scene(int input) {
+  Checking account = read_account();
+  
   if (account.has_setup == 0) {
-    printf("Bank account has not been setup\n");
-    printf("\nSetup bank account now?\n");
-    printf("1. Set Up\n");
-
-    if (input == 1) {
-      double deposit = 0.0;
-      printf("Enter deposit amount: ");
-      scanf(" %lf", &deposit);
-
-      double new_bal = update_checking(&account, deposit);
-      printf("Your new account balance is $%.2lf\n", new_bal);
-    }
+    goto_scene(create_bank_scene);
   } else {
-    printf("Bank balance: $%.2lf\n", account.balance);
+    goto_scene(read_bank_scene);
   }
+
+  return 1;
+}
+
+int game_scene(int input) {
+  Checking account = read_account();
+  int account_req = account.has_setup;
+  int wager_req = 0;
+
+  // Keep asking the user to set up an account
+  // until they do it successfully.
+  // We need a while loop here to help with
+  // bad user inputs.
+  while (account_req == 0) {
+    goto_scene(create_bank_scene);
+    account = read_account();
+    account_req = account.has_setup;
+  }
+
+  // Same story here as the account requirement.
+  // Helps with users entering bad wagers.
+  while (wager_req == 0) {
+    printf("Enter your wager: ");
+    double wager = 0.0;
+    scanf(" %lf", &wager);
+    printf("\n");
+
+    if (wager > account.balance) {
+      printf("Please enter a wager less than or equal to your bank balance!\n");
+      printf("Your balance is: $%.2lf\n", account.balance);
+    } else {
+      wager_req = 1;
+    }
+  }
+
+  printf("lets play craps... :) \n");
+  return 1;
 }

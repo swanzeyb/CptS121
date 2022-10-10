@@ -17,6 +17,7 @@
 #include <stdio.h> // Include our standard functions for interacting with the IO stream
 #include <stdlib.h> // Gives us access to system function
 #include <math.h> // Used to get access to pow, sqrt, fmod function
+#include "bank.h"
 
 // Calls the appropriate system call to clear the terminal
 void clear_terminal(void);
@@ -28,17 +29,22 @@ int get_menu_key();
 void display_main_menu();
 
 // Navigates to a game scene
-void goto_scene(void (*scene)(int));
+void goto_scene(int (*scene)(int));
 
 // Prints out the rules of the game of craps.
 void display_game_rules(void);
 
 // Setups up the game rules for interactivity
-void rules_scene(int input);
+int rules_scene(int input);
 
-void game_scene(int input);
+// Checks users bank balance or sets up their bank
+int check_bank_scene(int input);
 
-void check_bank_scene(int input);
+int create_bank_scene(int input);
+int read_bank_scene(int input);
+
+// The scene of the craps game
+int game_scene(int input);
 
 // Prompts the player for an initial bank balance from which wagering will be added or subtracted.
 double get_bank_balance(void);
