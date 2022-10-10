@@ -3,7 +3,7 @@
 * Class: CptS 121, Fall 2022; Lab Section 1
 * Programming Assignment: PA4
 * Date: October 7th, 2022
-* Description: Write a program that implements a craps game that allows for wagering.
+* Description: This module describes the games logic and rules.
 *******************************************************************************************/
 
 #include "game.h"
@@ -20,6 +20,50 @@ void clear_terminal() {
   #elif __APPLE__
     system("clear");
   #endif
+}
+
+int get_menu_key() {
+	int key = 0;
+	scanf(" %d", &key);
+	// printf("Get Menu Key Called: %d\n", key);
+	return key;
+}
+
+// Since this is the root menu of the game,
+// we don't need to set it up as a game scene.
+void display_main_menu() {
+	printf("Game Menu:\n");
+	printf("1. Play Craps\n");
+	printf("2. Craps Rules\n");
+	printf("3. Bank Balance\n");
+	printf("4. Exit\n");
+	printf("\nChoose by entering a menu number\n");
+}
+
+// This method allows us to dynamically start
+// any game scene and enable user navigation
+void goto_scene(void (*scene)(int)) {
+	int continue_scene = 1;
+	int current_input = -1;
+
+	// Start the scene with a garbage state
+	clear_terminal();
+	(*scene)(current_input);
+
+	// Begin reading user value
+	while (continue_scene == 1) {
+		// Give the option for the user to leave the scene
+		printf("\nPress 0 to go back.\n");
+		current_input = get_menu_key();
+
+		if (current_input == 0) {
+			continue_scene = 0;
+		} else {
+			// Call the scene with the updated state
+			clear_terminal();
+			(*scene)(current_input);
+		}
+	}
 }
 
 void display_game_rules() {
@@ -66,3 +110,9 @@ void rules_scene(int input) {
 void game_scene(int input) {
   printf("Game not implemented yet\n");
 }
+
+// void display_bank_balance()
+
+// void bank_scene(int input) {
+
+// }

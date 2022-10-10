@@ -3,7 +3,7 @@
 * Class: CptS 121, Fall 2022; Lab Section 1
 * Programming Assignment: PA4
 * Date: October 7th, 2022
-* Description: Write a program that implements a craps game that allows for wagering.
+* Description: This module implements a simple checking account system with persistence.
 *******************************************************************************************/
 
 // Header guard to ensure that our code is only included once by the compiler
@@ -15,7 +15,6 @@
 
 // The required libraries
 #include <stdio.h> // Include our standard functions for interacting with the IO stream
-#include <math.h> // Used to get access to pow, sqrt, fmod function
 
 // User's bank account
 struct checking {
@@ -25,6 +24,14 @@ struct checking {
 
 // This tells the compiler that I want to use the checking struct as a type
 typedef struct checking Checking;
+
+// Helper function to doubles from file
+double read_double(FILE *infile);
+
+// See if an account already exists on disk
+Checking read_account(void);
+
+void save_account(Checking *account);
 
 // Following the CRUD API standard... (even tho this is a library)
 

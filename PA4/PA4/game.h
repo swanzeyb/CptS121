@@ -3,7 +3,7 @@
 * Class: CptS 121, Fall 2022; Lab Section 1
 * Programming Assignment: PA4
 * Date: October 7th, 2022
-* Description: Write a program that implements a craps game that allows for wagering.
+* Description: This module describes the games logic and rules.
 *******************************************************************************************/
 
 // Header guard to ensure that our code is only included once by the compiler
@@ -21,7 +21,16 @@
 // Calls the appropriate system call to clear the terminal
 void clear_terminal(void);
 
-// Prints out the rules of the game of "craps".
+// Reads the user menu input
+int get_menu_key();
+
+// Prints out the games main menu
+void display_main_menu();
+
+// Navigates to a game scene
+void goto_scene(void (*scene)(int));
+
+// Prints out the rules of the game of craps.
 void display_game_rules(void);
 
 // Setups up the game rules for interactivity
