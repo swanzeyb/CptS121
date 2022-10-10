@@ -22,7 +22,7 @@ Checking read_account() {
   // Declare new account
   // Set 0 balance and flag that it is not setup
   Checking account = { 0, 0.0 };
-  if (balance < 0.1) {
+  if (balance < 0.01) {
     account.has_setup = 0;
   } else {
     account.has_setup = 1;

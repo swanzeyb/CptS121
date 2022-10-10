@@ -7,6 +7,7 @@
 *******************************************************************************************/
 
 #include "game.h"
+#include "bank.h"
 
 void clear_terminal() {
   // According to one source, there is standard constants
@@ -111,8 +112,23 @@ void game_scene(int input) {
   printf("Game not implemented yet\n");
 }
 
-// void display_bank_balance()
+void check_bank_scene(int input) {
+  Checking account = read_account();
 
-// void bank_scene(int input) {
+  if (account.has_setup == 0) {
+    printf("Bank account has not been setup\n");
+    printf("\nSetup bank account now?\n");
+    printf("1. Set Up\n");
 
-// }
+    if (input == 1) {
+      double deposit = 0.0;
+      printf("Enter deposit amount: ");
+      scanf(" %lf", &deposit);
+
+      double new_bal = update_checking(&account, deposit);
+      printf("Your new account balance is $%.2lf\n", new_bal);
+    }
+  } else {
+    printf("Bank balance: $%.2lf\n", account.balance);
+  }
+}

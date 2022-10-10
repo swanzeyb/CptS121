@@ -28,7 +28,7 @@ typedef struct checking Checking;
 // Helper function to doubles from file
 double read_double(FILE *infile);
 
-// See if an account already exists on disk
+// Returns account from disk, if not, creates a new one
 Checking read_account(void);
 
 void save_account(Checking *account);
