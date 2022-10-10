@@ -15,10 +15,17 @@
 
 // The required libraries
 #include <stdio.h> // Include our standard functions for interacting with the IO stream
+#include <stdlib.h> // Gives us access to system function
 #include <math.h> // Used to get access to pow, sqrt, fmod function
 
+// Calls the appropriate system call to clear the terminal
+void clear_terminal(void);
+
 // Prints out the rules of the game of "craps".
-void print_game_rules(void);
+void display_game_rules(void);
+
+// Setups up the game rules for interactivity
+void rules_scene(int input);
 
 // Prompts the player for an initial bank balance from which wagering will be added or subtracted.
 double get_bank_balance(void);
@@ -46,5 +53,7 @@ double adjust_bank_balance(double bank_balance, double wager_amount, int add_or_
 
 // Prints a message dependent on the number of rolls taken by the player.
 void chatter_messages(int number_rolls, int win_loss_neither, double initial_bank_balance, double current_bank_balance);
+
+void game_scene(int input);
 
 #endif
