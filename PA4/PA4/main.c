@@ -32,9 +32,6 @@ int main() {
 			case 4:
 				continue_game = 0;
 				break;
-			default:
-				// display_main_menu();
-				printf("default case...");
 		}
 	}
 
