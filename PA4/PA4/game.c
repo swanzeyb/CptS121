@@ -42,7 +42,11 @@ void display_main_menu() {
 	printf("\nChoose by entering a menu number\n");
 }
 
+// Store the current game point globally so it can be accessed
+// by other functions and to persist game state over
+// different invocations of the game scene.
 int points = -1;
+int rolls = 0;
 
 // This method allows us to dynamically start
 // any game scene and enable user navigation
@@ -50,7 +54,7 @@ void goto_scene(int (*scene)(int)) {
 	int continue_scene = 1;
 	int current_input = -1;
 
-	// Start the scene with a garbage state
+	// Start the scene with a garbage input state
 	clear_terminal();
 	continue_scene = (*scene)(current_input);
 
@@ -62,7 +66,11 @@ void goto_scene(int (*scene)(int)) {
 
 		if (current_input == 0) {
 			continue_scene = 0;
+      // Reseting the point regardless of the current scene assures that
+      // when the user navigates away from the game but then comes back,
+      // they get a fresh game state to start with.
       points = -1;
+      rolls = 0;
 		} else {
 			// Call the scene with the updated state
 			clear_terminal();
@@ -111,10 +119,13 @@ int rules_scene(int input) {
   // the game rules.
   display_game_rules();
 
+  // Returning 1 tells the scene manager to wait until the user navigates away
   return 1;
 }
 
-// Set a module-scoped bank acc variable
+// Setting a bank account globally here lets the various parts of the
+// game modify the checking account balance as needed without passing
+// a references into all the functions that need it.
 Checking account = { 0, 0.0 };
 
 int create_bank_scene(int input) {
@@ -124,8 +135,10 @@ int create_bank_scene(int input) {
   printf("Please enter an account deposit amount: ");
   scanf(" %lf", &deposit);
   double new_bal = update_checking(&account, deposit);
-  printf("\nYour new account balance is $%.2lf\n", new_bal);
+  printf("Your new account balance is $%.2lf\n\n", new_bal);
 
+  // We return 0 here because this is a nested scene and returning 1
+  // would cause two 'go back' menu prompts
   return 0;
 }
 
@@ -133,6 +146,8 @@ int read_bank_scene(int input) {
   account = read_account();
   printf("Bank balance: $%.2lf\n", account.balance);
 
+  // We return 0 here because this is a nested scene and returning 1
+  // would cause two 'go back' menu prompts
   return 0;
 }
 
@@ -181,6 +196,8 @@ double get_bank_balance(void) {
 }
 
 int roll_die(void) {
+  // This is supposed to make random return different values each
+  // time the program run, but it doesn't seem to do anything.
   srand(time(NULL));
   return (random() % 6) + 1;
 }
@@ -221,10 +238,24 @@ int is_point_loss_or_neither(int sum_dice, int point_value) {
   }
 }
 
-// void chatter_messages(int number_rolls, int win_loss_neither, double initial_bank_balance, double current_bank_balance) {
+void chatter_messages(int number_rolls, int win_loss_neither, double current_bank_balance) {
+  if (win_loss_neither == 1) {
+    // They won the bet
+    printf("You're up big, now's the time to cash in your chips!\n");
+  } else if (win_loss_neither == 0) {
+    // They lost the bet
+    if ((random() % 1) == 1) {
+      printf("Aw cmon, take another chance!\n");
+    } else {
+      printf("Sorry, you busted!\n");
+    }
+  } else {
+    printf("Oh, you're going for broke, huh?\n");
+  }
+}
 
-// }
-
+// This persists the wager stake over
+// different invocations of the game scene.
 double wager = -1;
 
 int do_roll() {
@@ -248,6 +279,8 @@ int do_roll() {
 }
 
 int game_scene(int input) {
+  // We aren't using the input argument here because we want to prompt for a character
+  // and input is only if the user selects the number like they were navigating a menu.
   if (points != -1) {
     printf("The game point is now %d\n\n", points);
   }
@@ -268,13 +301,16 @@ int game_scene(int input) {
     // They won the bet, add the wager
     update_checking(&account, wager);
     points = -1;
+    rolls = 0;
     printf("You won $%.2lf!\n", wager);
   } else if (outcome == 0) {
     // They lost the bet, subtract the wager
     update_checking(&account, wager * -1.0);
     points = -1;
+    rolls = 0;
     printf("You lost $%.2lf :(\n", wager);
   } else {
+    rolls += 1;
     if (points == -1) {
       points = die_sum;
     }
@@ -282,7 +318,7 @@ int game_scene(int input) {
     printf("You lost $%.2lf :(\n", wager);
   }
 
-  // chatter_messages();
+  chatter_messages(rolls, outcome, read_checking(&account));
 
   printf("\nKeep playing!\n");
   printf("  Enter 1 to continue\n");

@@ -68,6 +68,6 @@ int is_win_loss_or_point(int sum_dice);
 int is_point_loss_or_neither(int sum_dice, int point_value);
 
 // Prints a message dependent on the number of rolls taken by the player.
-void chatter_messages(int number_rolls, int win_loss_neither, double initial_bank_balance, double current_bank_balance);
+void chatter_messages(int number_rolls, int win_loss_neither, double current_bank_balance);
 
 #endif
