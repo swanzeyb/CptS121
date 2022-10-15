@@ -199,7 +199,7 @@ int roll_die(void) {
   // This is supposed to make random return different values each
   // time the program run, but it doesn't seem to do anything.
   srand(time(NULL));
-  return (random() % 6) + 1;
+  return (rand() % 6) + 1;
 }
 
 int calculate_sum_dice (int die1_value, int die2_value) {
@@ -244,7 +244,7 @@ void chatter_messages(int number_rolls, int win_loss_neither, double current_ban
     printf("You're up big, now's the time to cash in your chips!\n");
   } else if (win_loss_neither == 0) {
     // They lost the bet
-    if ((random() % 1) == 1) {
+    if ((rand() % 1) == 1) {
       printf("Aw cmon, take another chance!\n");
     } else {
       printf("Sorry, you busted!\n");
