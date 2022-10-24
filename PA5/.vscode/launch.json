@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // MacOS
+      "name": "Build & Launch",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceRoot}/${workspaceFolderBasename}/a.out",
+      "cwd": "${workspaceRoot}/${workspaceFolderBasename}",
+      // Ignore debug output garbage: !Loaded '/, !Warning, !=thread, !=library
+      "env": { "TERM": "xterm" },
+      "terminal": "external",
+      "preLaunchTask": "${defaultBuildTask}"
+    }
+  ]
+}

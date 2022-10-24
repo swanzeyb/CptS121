@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "build",
+      "command": "/usr/bin/clang",
+      "args": [
+        "${workspaceFolder}/${workspaceFolderBasename}/*.c",
+        "-o",
+        "${workspaceFolder}/${workspaceFolderBasename}/a.out",
+        "-g",
+        "-O0"
+      ],
+      "presentation": {
+        "reveal": "silent",
+        "clear": true
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
