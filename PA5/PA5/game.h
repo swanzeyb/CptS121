@@ -62,11 +62,18 @@ typedef struct Points Points;
 void clear_terminal();
 int get_menu_key();
 int sum_array(int nums[], int length);
+int is_zero_default(int val_one, int val_two);
+void blue();
+void green();
+void reset();
+void highlight_point(char format[], int curr_point, int new_point);
 
 // -- The functions that purely print info to console --
 void display_main_menu();
 void display_rules();
 void display_scorecard(GameState state);
+void display_dice(int dice[]);
+// void display_options(Points points);
 
 // -- The components that make up scenes --
 int roll_die(void);

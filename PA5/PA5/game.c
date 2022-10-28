@@ -38,6 +38,44 @@ int sum_array(int nums[], int length) {
   return sum;
 }
 
+// In JavaScript, I would normally just the logical OR operator
+// But it seems like that returns different values in C
+// So this let's us do a default value if val_one is zero.
+int is_zero_default(int val_one, int val_two) {
+  if (val_one != 0) {
+    return val_one;
+  } else {
+    return val_two;
+  }
+}
+
+// I want to print in color, so I found this StackOverflow that lists
+// the ANSI codes to change the print color!
+// https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
+void blue() {
+  printf("\033[0;96m");
+}
+
+void green() {
+  printf("\033[0;32m");
+}
+
+void reset() {
+  printf("\033[0m");
+}
+
+
+void highlight_point(char format[], int curr_point, int new_point) {
+  // Basically, if it's a new point and it's available highlight it
+  if (new_point != 0 && curr_point == 0) {
+    green();
+    printf(format, new_point);
+    reset();
+  } else {
+    printf(format, curr_point);
+  }
+}
+
 // Since this is the root menu of the game,
 // we don't need to set it up as a game scene.
 void display_main_menu() {
@@ -57,22 +95,52 @@ void display_rules() {
 }
 
 void display_scorecard(GameState state) {
-  printf("Ones           %d | %d\n", state.upper[0][0], state.upper[1][0]);
-  printf("Twos           %d | %d\n", state.upper[0][1], state.upper[1][1]);
-  printf("Threes         %d | %d\n", state.upper[0][2], state.upper[1][2]);
-  printf("Fours          %d | %d\n", state.upper[0][3], state.upper[1][3]);
-  printf("Fives          %d | %d\n", state.upper[0][4], state.upper[1][4]);
-  printf("Sixes          %d | %d\n", state.upper[0][5], state.upper[1][5]);
-  printf("Sum            %d | %d\n", state.sum[0], state.sum[1]);
-  printf("Bonus          %d | %d\n", state.bonus[0], state.bonus[1]);
-  printf("3 of a Kind    %d | %d\n", state.three_kind[0], state.three_kind[1]);
-  printf("4 of a Kind    %d | %d\n", state.four_kind[0], state.four_kind[1]);
-  printf("Full House     %d | %d\n", state.full_house[0], state.full_house[1]);
-  printf("Small Straight %d | %d\n", state.small_straight[0], state.small_straight[1]);
-  printf("Large Straight %d | %d\n", state.large_straight[0], state.large_straight[1]);
-  printf("Chance         %d | %d\n", state.chance[0], state.chance[1]);
-  printf("Yahtzee        %d | %d\n", state.yahtzee[0], state.yahtzee[1]);
-  printf("Total          %d | %d\n", state.total[0], state.total[1]);
+  printf("Players         P1   P2\n");
+  printf("Ones            %d | %d\n", state.upper[0][0], state.upper[1][0]);
+  printf("Twos            %d | %d\n", state.upper[0][1], state.upper[1][1]);
+  printf("Threes          %d | %d\n", state.upper[0][2], state.upper[1][2]);
+  printf("Fours           %d | %d\n", state.upper[0][3], state.upper[1][3]);
+  printf("Fives           %d | %d\n", state.upper[0][4], state.upper[1][4]);
+  printf("Sixes           %d | %d\n", state.upper[0][5], state.upper[1][5]);
+  printf("Sum             %d | %d\n", state.sum[0], state.sum[1]);
+  printf("Bonus           %d | %d\n", state.bonus[0], state.bonus[1]);
+  printf("3 of a Kind     %d | %d\n", state.three_kind[0], state.three_kind[1]);
+  printf("4 of a Kind     %d | %d\n", state.four_kind[0], state.four_kind[1]);
+  printf("Full House      %d | %d\n", state.full_house[0], state.full_house[1]);
+  printf("Small Straight  %d | %d\n", state.small_straight[0], state.small_straight[1]);
+  printf("Large Straight  %d | %d\n", state.large_straight[0], state.large_straight[1]);
+  printf("Chance          %d | %d\n", state.chance[0], state.chance[1]);
+  printf("Yahtzee         %d | %d\n", state.yahtzee[0], state.yahtzee[1]);
+  printf("Total           %d | %d\n", state.total[0], state.total[1]);
+}
+
+void display_options(GameState state, Points points) {
+  // If the new point combo is non zero, and this player hasn't used the combo previously
+  // Highlight it so it's obvious they can pick that one.
+  int player = state.current_player;
+  printf("Available point combinations:\n");
+  highlight_point("1.  Ones            %d\n", state.upper[player][1], points.ones);
+  highlight_point("2.  Twos            %d\n", state.upper[player][1], points.twos);
+  highlight_point("3.  Threes          %d\n", state.upper[player][1], points.threes);
+  highlight_point("4.  Fours           %d\n", state.upper[player][1], points.fours);
+  highlight_point("5.  Fives           %d\n", state.upper[player][1], points.fives);
+  highlight_point("6.  Sixes           %d\n", state.upper[player][1], points.sixes);
+  highlight_point("7.  3 of a Kind     %d\n", state.three_kind[player], points.three_kind);
+  highlight_point("8.  4 of a Kind     %d\n", state.four_kind[player], points.four_kind);
+  highlight_point("9.  Full House      %d\n", state.full_house[player], points.full_house);
+  highlight_point("10. Small Straight  %d\n", state.small_straight[player], points.small_straight);
+  highlight_point("11. Large Straight  %d\n", state.large_straight[player], points.large_straight);
+  highlight_point("12. Chance          %d\n", state.chance[player], points.chance);
+  highlight_point("13. Yahtzee         %d\n", state.yahtzee[player], points.yahtzee);
+}
+
+void display_dice(int dice[]) {
+  printf("\nThe dice are: \n");
+  for (int i = 0; i < 5; i++) {
+    int value = dice[i];
+    printf("| %d |    ", value);
+  }
+  printf("\n\n");
 }
 
 int roll_die(void) {
@@ -87,10 +155,8 @@ void roll_component(int dice[]) {
   char roll_input = '\0'; // We aren't going to check, it's just for the lolz
   scanf(" %c", &roll_input);
 
-  printf("\n The dice are \n");
   for (int i = 0; i < 5; i++) {
     dice[i] = roll_die();
-    printf("-- %d --\n", dice[i]);
   }
 }
 
@@ -196,23 +262,7 @@ Points calculate_points(int dice[]) {
     int value = dice[i] - 1; // Subtract 1 to reference an array index
     count[value] += 1;
   }
-
-  // int options[13] = {
-  //   /* Ones */           count[0],
-  //   /* Twos */           2 * count[1],
-  //   /* Threes */         3 * count[2],
-  //   /* Fours */          4 * count[3],
-  //   /* Fives */          5 * count[4],
-  //   /* Sixes */          6 * count[5],
-  //   /* 3 Kind */         same_kind_points(count, 3),
-  //   /* 4 Kind */         same_kind_points(count, 4),
-  //   /* Full House */     full_house_points(count),
-  //   /* Small Straight */ straight_points(dice, 4, 30),
-  //   /* Large Straight */ straight_points(dice, 5, 40),
-  //   /* Chance */         sum_array(dice, 5),
-  //   /* Yahtzee */        yahtzee_points(count),
-  // };
-
+  
   Points points = {
     /* Ones */           count[0],
     /* Twos */           2 * count[1],
@@ -248,14 +298,27 @@ void update_points(GameState state, int player, Points points) {
   state.yahtzee[player] = points.yahtzee;
 }
 
+GameState state = {
+  0, 0,
+  { { 0 }, { 0 } },
+  { 0 }, { 0 },
+  { 0 }, { 0 },
+  { 0 }, { 0 },
+  { 0 }, { 0 },
+  { 0 }, { 0 }
+};
+
 int game_scene(int input) {
   int dice[5] = { 0 };
+
   roll_component(dice);
-  
+  display_dice(dice);
   Points potential = calculate_points(dice);
+  display_options(state, potential);
+  int choice = get_menu_key();
   
-  printf("\nKeep playing!\n");
-  printf("  Enter 1 to continue\n");
-  printf("  > OR <\n  ");
+  // printf("\n");
+  // printf("  Enter 1 to continue\n");
+  // printf("  > OR <\n  ");
   return 1;
 }
