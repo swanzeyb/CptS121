@@ -17,57 +17,74 @@
 #include <stdio.h> // Include our standard functions for interacting with the IO stream
 #include <stdlib.h> // Gives us access to system function
 #include <time.h> // This gives access to time func used in srand
-#include "bank.h"
 
-// Calls the appropriate system call to clear the terminal
-void clear_terminal(void);
+// Create a new struct to hold the game's score
+// If this was C++ I think this would be better as a class
+struct GameState {
+  int current_player;
+  int current_rolls;
+  int upper[2][6]; // 2D array can store the upper section points for both players
+  // The rest are 2 length arrays to store each users score
+  int sum[2];
+  int bonus[2];
+  int three_kind[2];
+  int four_kind[2];
+  int full_house[2];
+  int small_straight[2];
+  int large_straight[2];
+  int chance[2];
+  int yahtzee[2];
+  int total[2];
+};
 
-// Reads the user menu input
+// This tells the compiler that I want to use the GameState struct as a type
+typedef struct GameState GameState;
+
+struct Points {
+    /* Ones */           int ones;
+    /* Twos */           int twos;
+    /* Threes */         int threes;
+    /* Fours */          int fours;
+    /* Fives */          int fives;
+    /* Sixes */          int sixes;
+    /* 3 Kind */         int three_kind;
+    /* 4 Kind */         int four_kind;
+    /* Full House */     int full_house;
+    /* Small Straight */ int small_straight;
+    /* Large Straight */ int large_straight;
+    /* Chance */         int chance;
+    /* Yahtzee */        int yahtzee;
+};
+
+typedef struct Points Points;
+
+// -- Helper functions --
+void clear_terminal();
 int get_menu_key();
+int sum_array(int nums[], int length);
 
-// Prints out the games main menu
+// -- The functions that purely print info to console --
 void display_main_menu();
+void display_rules();
+void display_scorecard(GameState state);
 
-// Navigates to a game scene
+// -- The components that make up scenes --
+int roll_die(void);
+void roll_component(int dice[]);
+
+// -- The games main scenes --
 void goto_scene(int (*scene)(int));
-
-// Prints out the rules of the game of craps.
-void display_game_rules(void);
-
-// Setups up the game rules for interactivity
 int rules_scene(int input);
-
-// Checks users bank balance or sets up their bank
-int check_bank_scene(int input);
-
-// Prompts the user to enter a balance to add and subtract wagers from
-int create_bank_scene(int input);
-
-// The game scene for the user to see their balance
-int read_bank_scene(int input);
-
-// The scene of the craps game
 int game_scene(int input);
 
-// Prompts the player for a wager on a particular roll.
-double get_wager_amount(double balance);
+// -- The functions that perform point calculations
+int same_kind_points(int count[], int same_amount);
+int full_house_points(int count[]);
+int straight_points(int dice[], int how_many, int reward);
+int yahtzee_points(int count[]);
+Points calculate_points(int dice[]);
 
-// Prompts the player for an initial bank balance from which wagering will be added or subtracted.
-double get_bank_balance(void);
-
-// Rolls one die. This function should randomly generate a value between 1 and 6, inclusively.
-int roll_die(void);
-
-// Sums together the values of the two dice and returns the result.
-int calculate_sum_dice(int die1_value, int die2_value);
-
-// Determines the result of the first dice roll.
-int is_win_loss_or_point(int sum_dice);
-
-// Determines the result of any successive roll after the first roll.
-int is_point_loss_or_neither(int sum_dice, int point_value);
-
-// Prints a message dependent on the number of rolls taken by the player.
-void chatter_messages(int number_rolls, int win_loss_neither, double current_bank_balance);
+// -- The functions that modify game state --
+void update_points(GameState state, int player, Points points);
 
 #endif

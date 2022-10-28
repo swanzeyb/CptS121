@@ -7,7 +7,6 @@
 *******************************************************************************************/
 
 #include "game.h"
-#include "bank.h"
 #include <stdlib.h>
 
 void clear_terminal() {
@@ -31,6 +30,14 @@ int get_menu_key() {
 	return key;
 }
 
+int sum_array(int nums[], int length) {
+  int sum = 0;
+  for (int i = 0; i < length; i++) {
+    sum += nums[i];
+  }
+  return sum;
+}
+
 // Since this is the root menu of the game,
 // we don't need to set it up as a game scene.
 void display_main_menu() {
@@ -41,12 +48,51 @@ void display_main_menu() {
 	printf("\nChoose by entering a menu number\n");
 }
 
-// Store the current game point globally so it can be accessed
-// by other functions and to persist game state over
-// different invocations of the game scene.
-// put game state here
+void display_rules() {
+  /*
+    The following rules were directly taken from an online source.
+    https://www.onlinegambling.com/casino/craps/how-to-play/
+  */
+  printf("How to Yahtzee:\n");
+}
 
-// function for reseting game state
+void display_scorecard(GameState state) {
+  printf("Ones           %d | %d\n", state.upper[0][0], state.upper[1][0]);
+  printf("Twos           %d | %d\n", state.upper[0][1], state.upper[1][1]);
+  printf("Threes         %d | %d\n", state.upper[0][2], state.upper[1][2]);
+  printf("Fours          %d | %d\n", state.upper[0][3], state.upper[1][3]);
+  printf("Fives          %d | %d\n", state.upper[0][4], state.upper[1][4]);
+  printf("Sixes          %d | %d\n", state.upper[0][5], state.upper[1][5]);
+  printf("Sum            %d | %d\n", state.sum[0], state.sum[1]);
+  printf("Bonus          %d | %d\n", state.bonus[0], state.bonus[1]);
+  printf("3 of a Kind    %d | %d\n", state.three_kind[0], state.three_kind[1]);
+  printf("4 of a Kind    %d | %d\n", state.four_kind[0], state.four_kind[1]);
+  printf("Full House     %d | %d\n", state.full_house[0], state.full_house[1]);
+  printf("Small Straight %d | %d\n", state.small_straight[0], state.small_straight[1]);
+  printf("Large Straight %d | %d\n", state.large_straight[0], state.large_straight[1]);
+  printf("Chance         %d | %d\n", state.chance[0], state.chance[1]);
+  printf("Yahtzee        %d | %d\n", state.yahtzee[0], state.yahtzee[1]);
+  printf("Total          %d | %d\n", state.total[0], state.total[1]);
+}
+
+int roll_die(void) {
+  // This is supposed to make random return different values each
+  // time the program run, but it doesn't seem to do anything.
+  return (rand() % 6) + 1;
+}
+
+void roll_component(int dice[]) {
+  printf("Ready? Enter R to roll the dice!\n");
+
+  char roll_input = '\0'; // We aren't going to check, it's just for the lolz
+  scanf(" %c", &roll_input);
+
+  printf("\n The dice are \n");
+  for (int i = 0; i < 5; i++) {
+    dice[i] = roll_die();
+    printf("-- %d --\n", dice[i]);
+  }
+}
 
 // This method allows us to dynamically start
 // any game scene and enable user navigation
@@ -79,70 +125,134 @@ void goto_scene(int (*scene)(int)) {
 	}
 }
 
-void display_game_rules() {
-  /*
-    The following rules were directly taken from an online source.
-    https://www.onlinegambling.com/casino/craps/how-to-play/
-  */
-  printf("How to Yahtzee:\n");
-}
-
 int rules_scene(int input) {
   // Normally in a scene, the input would be evaluated.
   // But since we're just showing the rules, there's
   // no interactivity to this scene, so just print
   // the game rules.
-  display_game_rules();
+  display_rules();
 
   // Returning 1 tells the scene manager to wait until the user navigates away
   return 1;
 }
 
-int roll_die(void) {
-  // This is supposed to make random return different values each
-  // time the program run, but it doesn't seem to do anything.
-  srand(time(NULL));
-  return (rand() % 6) + 1;
-}
-
-int sum_array(int nums[], int length) {
-  int sum = 0;
-  for (int i = 0; i < length; i++) {
-    sum += nums[i];
+int same_kind_points(int count[], int same_amount) {
+  int has_point = 0;
+  int total = 0;
+  for (int i = 0; i < 6; i++) {
+    int amount = count[i];
+    total += i * amount;
+    if (amount == same_amount) {
+      has_point = 1;
+    }
   }
-  return sum;
+  return has_point * total;
 }
 
-void update_array(int nums[], int length, int (*cbFunc)(void)) {
-  for (int i = 0; i < length; i++) {
-    nums[i] = (*cbFunc)();
+int full_house_points(int count[]) {
+  int two_kind = same_kind_points(count, 2);
+  int three_kind = same_kind_points(count, 3);
+
+  if (two_kind != 0 && three_kind != 0) {
+    return 25;
+  } else {
+    return 0;
   }
 }
 
-int do_roll() {
-  printf("Ready? Enter R to roll the dice!\n");
+int straight_points(int dice[], int how_many, int reward) {
+  int last = 0;
+  int count = 0;
+  for (int i = 0; i < 5; i++) {
+    int value = dice[i];
+    if ((value - last) == 1) {
+      // If the difference is one, it's sequential
+      count += 1;
+    } else {
+      // Else it's no sequential, so just reset the count
+      count = 0;
+    }
+    if (count == how_many) {
+      // If there were 4 in a row give them the point
+      return reward;
+    }
+    last = value;
+  }
+  return 0;
+}
 
-  char roll_input = '\0'; // We aren't going to check, it's just for the lolz
-  scanf(" %c", &roll_input);
+int yahtzee_points(int count[]) {
+  int five_kind = same_kind_points(count, 5);
+  if (five_kind != 0) {
+    return 50;
+  }
+  return 0;
+}
 
-  int dies[5] = { 0 };
-  update_array(dies, 5, do_roll);
+Points calculate_points(int dice[]) {
+  int count[6] = { 0 };
 
-  printf("\n The dies are \n");
-  printf("-- %d --\n", dies[0]);
-  printf("-- %d --\n", dies[1]);
-  printf("-- %d --\n", dies[2]);
-  printf("-- %d --\n", dies[3]);
-  printf("-- %d --\n", dies[4]);
+  for (int i = 0; i < 5; i++) {
+    int value = dice[i] - 1; // Subtract 1 to reference an array index
+    count[value] += 1;
+  }
 
-  int die_sum = sum_array(dies, 5);
-  printf("\nThe die sum is %d\n\n", die_sum);
+  // int options[13] = {
+  //   /* Ones */           count[0],
+  //   /* Twos */           2 * count[1],
+  //   /* Threes */         3 * count[2],
+  //   /* Fours */          4 * count[3],
+  //   /* Fives */          5 * count[4],
+  //   /* Sixes */          6 * count[5],
+  //   /* 3 Kind */         same_kind_points(count, 3),
+  //   /* 4 Kind */         same_kind_points(count, 4),
+  //   /* Full House */     full_house_points(count),
+  //   /* Small Straight */ straight_points(dice, 4, 30),
+  //   /* Large Straight */ straight_points(dice, 5, 40),
+  //   /* Chance */         sum_array(dice, 5),
+  //   /* Yahtzee */        yahtzee_points(count),
+  // };
 
-  return die_sum;
+  Points points = {
+    /* Ones */           count[0],
+    /* Twos */           2 * count[1],
+    /* Threes */         3 * count[2],
+    /* Fours */          4 * count[3],
+    /* Fives */          5 * count[4],
+    /* Sixes */          6 * count[5],
+    /* 3 Kind */         same_kind_points(count, 3),
+    /* 4 Kind */         same_kind_points(count, 4),
+    /* Full House */     full_house_points(count),
+    /* Small Straight */ straight_points(dice, 4, 30),
+    /* Large Straight */ straight_points(dice, 5, 40),
+    /* Chance */         sum_array(dice, 5),
+    /* Yahtzee */        yahtzee_points(count),
+  };
+
+  return points;
+}
+
+void update_points(GameState state, int player, Points points) {
+  state.upper[player][0] = points.ones;
+  state.upper[player][1] = points.twos;
+  state.upper[player][2] = points.threes;
+  state.upper[player][3] = points.fours;
+  state.upper[player][4] = points.fives;
+  state.upper[player][5] = points.sixes;
+  state.three_kind[player] = points.three_kind;
+  state.four_kind[player] = points.four_kind;
+  state.full_house[player] = points.full_house;
+  state.small_straight[player] = points.small_straight;
+  state.large_straight[player] = points.large_straight;
+  state.chance[player] = points.chance;
+  state.yahtzee[player] = points.yahtzee;
 }
 
 int game_scene(int input) {
-  int die_sum = do_roll();
+  int dice[5] = { 0 };
+  roll_component(dice);
+  
+  Points potential = calculate_points(dice);
   
   printf("\nKeep playing!\n");
   printf("  Enter 1 to continue\n");
