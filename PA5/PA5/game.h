@@ -18,28 +18,6 @@
 #include <stdlib.h> // Gives us access to system function
 #include <time.h> // This gives access to time func used in srand
 
-// Create a new struct to hold the game's score
-// If this was C++ I think this would be better as a class
-struct GameState {
-  int current_player;
-  int current_rolls;
-  int upper[2][6]; // 2D array can store the upper section points for both players
-  // The rest are 2 length arrays to store each users score
-  int sum[2];
-  int bonus[2];
-  int three_kind[2];
-  int four_kind[2];
-  int full_house[2];
-  int small_straight[2];
-  int large_straight[2];
-  int chance[2];
-  int yahtzee[2];
-  int total[2];
-};
-
-// This tells the compiler that I want to use the GameState struct as a type
-typedef struct GameState GameState;
-
 struct Points {
     /* Ones */           int ones;
     /* Twos */           int twos;
@@ -58,6 +36,30 @@ struct Points {
 
 typedef struct Points Points;
 
+// Create a new struct to hold the game's score
+// If this was C++ I think this would be better as a class
+struct GameState {
+  int current_player;
+  int current_rolls;
+  Points last_points;
+  int dice[5];
+  int upper[2][6]; // 2D array can store the upper section points for both players
+  // The rest are 2 length arrays to store each users score
+  int sum[2];
+  int bonus[2];
+  int three_kind[2];
+  int four_kind[2];
+  int full_house[2];
+  int small_straight[2];
+  int large_straight[2];
+  int chance[2];
+  int yahtzee[2];
+  int total[2];
+};
+
+// This tells the compiler that I want to use the GameState struct as a type
+typedef struct GameState GameState;
+
 // -- Helper functions --
 void clear_terminal();
 int get_menu_key();
@@ -71,27 +73,29 @@ void highlight_point(char format[], int curr_point, int new_point);
 // -- The functions that purely print info to console --
 void display_main_menu();
 void display_rules();
-void display_scorecard(GameState state);
+void display_scorecard();
+void display_dice_legend(int dice[]);
 void display_dice(int dice[]);
 // void display_options(Points points);
 
 // -- The components that make up scenes --
 int roll_die(void);
-void roll_component(int dice[]);
 
 // -- The games main scenes --
 void goto_scene(int (*scene)(int));
 int rules_scene(int input);
+int roll_scene(int input);
 int game_scene(int input);
 
 // -- The functions that perform point calculations
 int same_kind_points(int count[], int same_amount);
 int full_house_points(int count[]);
-int straight_points(int dice[], int how_many, int reward);
+int small_straight_points(int count[]);
+int large_straight_points(int count[]);
 int yahtzee_points(int count[]);
 Points calculate_points(int dice[]);
 
 // -- The functions that modify game state --
-void update_points(GameState state, int player, Points points);
+void update_points(Points points, int option);
 
 #endif
