@@ -417,7 +417,7 @@ int select_combo_scene(int input) {
 int game_scene(int input) {
   state.current_rolls = 0;
 
-  while (state.current_rolls < 3) {
+  while (state.current_rolls < 2) {
     goto_scene(roll_scene);
     printf("PLAYER %d\n", state.current_player + 1);
     display_dice(state.dice);
@@ -426,10 +426,19 @@ int game_scene(int input) {
     if (do_reroll == 1) {
       // Ask user which dice to re-roll and then loop to re-roll
       goto_scene(select_dice_scene);
+      if (state.current_rolls == 2) {
+        goto_scene(roll_scene);
+      }
     } else {
       state.current_rolls = 3;
     }
   }
+
+  clear_terminal();
+  printf("PLAYER %d\n", state.current_player + 1);
+  display_dice(state.dice);
+  printf("Ready to select a combination? Press 1 to continue\n");
+  get_menu_key();
 
   // If they don't need to re-roll, select a combo
   goto_scene(select_combo_scene);
