@@ -97,5 +97,6 @@ Points calculate_points(int dice[]);
 
 // -- The functions that modify game state --
 void update_points(Points points, int option);
+int has_player_won(GameState state);
 
 #endif

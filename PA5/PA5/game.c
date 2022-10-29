@@ -312,6 +312,33 @@ void update_points(Points points, int option) {
     state.bonus[player];
 }
 
+int has_player_won(GameState state) {
+  int one_nonzero = sum_array(state.upper[0], 6) *
+    state.three_kind[0] *
+    state.four_kind[0] *
+    state.full_house[0] *
+    state.small_straight[0] *
+    state.large_straight[0] *
+    state.chance[0] *
+    state.yahtzee[0] *
+    state.bonus[0];
+  int two_nonzero = sum_array(state.upper[1], 6) *
+    state.three_kind[1] *
+    state.four_kind[1] *
+    state.full_house[1] *
+    state.small_straight[1] *
+    state.large_straight[1] *
+    state.chance[1] *
+    state.yahtzee[1] *
+    state.bonus[1];
+  if (one_nonzero) {
+    return 1;
+  } else if (two_nonzero) {
+    return 2;
+  }
+  return 0;
+}
+
 // This method allows us to dynamically start
 // any game scene and enable user navigation
 void goto_scene(int (*scene)(int)) {
@@ -446,6 +473,16 @@ int game_scene(int input) {
     state.current_player = 1;
   } else {
     state.current_player = 0;
+  }
+
+  int winner = has_player_won(state);
+  if (winner != 0) {
+    green();
+    clear_terminal();
+    printf("PLAYER %d has won the game!\n", winner);
+    reset();
+    get_menu_key();
+    return 0;
   }
   
   blue();
