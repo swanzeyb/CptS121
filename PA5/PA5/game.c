@@ -1,7 +1,7 @@
 /*******************************************************************************************
 * Programmer: Benjamin Swanzey <benjamin.swanzey@wsu.edu>
 * Class: CptS 121, Fall 2022; Lab Section 1
-* Programming Assignment: PA4
+* Programming Assignment: PA5
 * Date: October 7th, 2022
 * Description: This module describes the games logic and rules.
 *******************************************************************************************/
