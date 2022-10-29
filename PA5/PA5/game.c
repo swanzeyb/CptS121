@@ -199,7 +199,7 @@ int same_kind_points(int count[], int same_amount) {
   int total = 0;
   for (int i = 0; i < 6; i++) {
     int amount = count[i];
-    total += i * amount;
+    total += ((i + 1) * amount);
     if (amount == same_amount) {
       has_point = 1;
     }
@@ -297,6 +297,19 @@ void update_points(Points points, int option) {
     case 12: state.chance[player] = points.chance; break;
     case 13: state.yahtzee[player] = points.yahtzee; break;
   }
+  if (sum_array(state.upper[player], 6) > 62) {
+    state.bonus[player] = 35;
+  }
+  state.total[player] =
+    sum_array(state.upper[player], 6) +
+    state.three_kind[player] +
+    state.four_kind[player] +
+    state.full_house[player] +
+    state.small_straight[player] +
+    state.large_straight[player] +
+    state.chance[player] +
+    state.yahtzee[player] +
+    state.bonus[player];
 }
 
 // This method allows us to dynamically start
@@ -331,6 +344,7 @@ int rules_scene(int input) {
   // no interactivity to this scene, so just print
   // the game rules.
   display_rules();
+  printf("Press 0 to exit.\n");
 
   // Returning 1 tells the scene manager to wait until the user navigates away
   return 1;
