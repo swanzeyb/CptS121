@@ -14,11 +14,18 @@ int main() {
 	int continue_game = 1;
 	int current_menu = -1;
 
-	Board p1 = { { { 0 }, { 0 } } };
-	Board p2 = { { { 0 }, { 0 } } };
+	Ship NullShip = { 0, '\0', 0, 0, 0, 0, 0 };
+	Board p1;
+	Board p2;
 
 	init_board(&p1);
 	init_board(&p2);
+
+	Ship p1_fleet[5];
+	Ship p2_fleet[5];
+
+	init_fleet(p1_fleet);
+	init_fleet(p2_fleet);
 
 	State state = { p1, p2 };
 

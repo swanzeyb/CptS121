@@ -20,17 +20,21 @@
 
 // The Carrier has 5 cells, Battleship has 4 cells, Cruiser has 3 cells, Submarine has 3 cells, and the Destroyer has 2 cells.
 enum Ships {
-  Destroyer = 2,
-  Submarine = 3,
+  NoShip = 0,
+  Destroyer = 1,
+  Submarine = 2,
   Cruiser = 3,
   Battleship = 4,
   Carrier = 5,
 };
 
+// If this was C++, I think I would use polymorphism to extend a base ship class
+// and then make all the different ship types.
+
 typedef struct {
   char display;
   int length;
-  Ships type;
+  enum Ships type;
   int is_vert;
   int x_lower;
   int y_lower;
@@ -39,13 +43,8 @@ typedef struct {
 } Ship;
 
 typedef struct {
-  int is_occupied;
-  Ship* who_is;
-  char display;
-} Tile;
-
-typedef struct {
-  Tile tiles[10][10];
+  Ship* who_is[10][10];
+  char display[10][10];
 } Board;
 
 typedef struct {
@@ -96,6 +95,7 @@ int rules_scene(char input, State* state);
 int game_scene(char input, State* state);
 
 // -- Game Stuff
+void init_fleet(Ship fleet[]);
 void init_board(Board *board);
 void display_board(Board *board);
 

@@ -118,36 +118,54 @@ char wait_for_input() {
   }
 }
 
-void init_board(Board *board) {
+// The Carrier has 5 cells, Battleship has 4 cells, Cruiser has 3 cells, Submarine has 3 cells, and the Destroyer has 2 cells.
+const int ship_lengths[] = { 0, 2, 3, 3, 4, 5 };
+// Indicated by 'c' for Carrier, 'b' for Battleship, 'r' for Cruiser, 's' for Submarine, or 'd' for Destroyer
+const char ship_display[] = { '\0', 'd', 's', 'r', 'b', 'c' };
+
+void init_fleet(Ship fleet[]) {
+  for (int i = 0; i < 5; i++) {
+    int type = i + 1;
+    Ship a_ship = {
+      ship_display[type],
+      ship_lengths[type],
+      type, 0, 0, 0, 0, 0
+    };
+    fleet[i] = a_ship;
+  }
+}
+
+void init_board(Board* board) {
   for (int x = 0; x < 10; x++) {
     for (int y = 0; y < 10; y++) {
-      board->tiles[x][y] = '-';
+      board->who_is[x][y] = NULL; // Set a null pointer because there is no ship here yet
+      board->display[x][y] = '-'; // The default graphic is this lil' dude
     }
   }
 }
 
-void display_board(Board *board) {
-  color(GREEN); printf("  0 1 2 3 4 5 6 7 8 9\n"); reset();
-  for (int x = 0; x < 10; x++) {
-    color(GREEN); printf("%d ", x); reset();
-    for (int y = 0; y < 10; y++) {
-      int tile = board->tiles[x][y];
-      printf("%c ", tile);
-    }
-    printf("\n");
-  }
-}
+// void display_board(Board *board) {
+//   color(GREEN); printf("  0 1 2 3 4 5 6 7 8 9\n"); reset();
+//   for (int x = 0; x < 10; x++) {
+//     color(GREEN); printf("%d ", x); reset();
+//     for (int y = 0; y < 10; y++) {
+//       int tile = board->tiles[x][y];
+//       printf("%c ", tile);
+//     }
+//     printf("\n");
+//   }
+// }
 
-void display_all_boards(State* state) {
-  printf("Your Board:\n");
-  display_board(&state->p1);
-  printf("\nOpposition's Board:\n");
-  display_board(&state->p2);
-}
+// void display_all_boards(State* state) {
+//   printf("Your Board:\n");
+//   display_board(&state->p1);
+//   printf("\nOpposition's Board:\n");
+//   display_board(&state->p2);
+// }
 
 int game_scene(char input, State* state) {
-  switch (input) {
-    default: display_all_boards(state); break;
-  }
+  // switch (input) {
+  //   default: display_all_boards(state); break;
+  // }
   return 1;
 }
