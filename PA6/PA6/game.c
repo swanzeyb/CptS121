@@ -144,28 +144,28 @@ void init_board(Board* board) {
   }
 }
 
-// void display_board(Board *board) {
-//   color(GREEN); printf("  0 1 2 3 4 5 6 7 8 9\n"); reset();
-//   for (int x = 0; x < 10; x++) {
-//     color(GREEN); printf("%d ", x); reset();
-//     for (int y = 0; y < 10; y++) {
-//       int tile = board->tiles[x][y];
-//       printf("%c ", tile);
-//     }
-//     printf("\n");
-//   }
-// }
+void display_board(Board *board) {
+  color(GREEN); printf("  0 1 2 3 4 5 6 7 8 9\n"); reset();
+  for (int x = 0; x < 10; x++) {
+    color(GREEN); printf("%d ", x); reset();
+    for (int y = 0; y < 10; y++) {
+      int tile = board->display[x][y];
+      printf("%c ", tile);
+    }
+    printf("\n");
+  }
+}
 
-// void display_all_boards(State* state) {
-//   printf("Your Board:\n");
-//   display_board(&state->p1);
-//   printf("\nOpposition's Board:\n");
-//   display_board(&state->p2);
-// }
+void display_all_boards(State* state) {
+  printf("Your Board:\n");
+  display_board(state->p1);
+  printf("\nOpposition's Board:\n");
+  display_board(state->p2);
+}
 
 int game_scene(char input, State* state) {
-  // switch (input) {
-  //   default: display_all_boards(state); break;
-  // }
+  switch (input) {
+    default: display_all_boards(state); break;
+  }
   return 1;
 }

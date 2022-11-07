@@ -14,12 +14,11 @@ int main() {
 	int continue_game = 1;
 	int current_menu = -1;
 
-	Ship NullShip = { 0, '\0', 0, 0, 0, 0, 0 };
-	Board p1;
-	Board p2;
+	Board p1_board;
+	Board p2_board;
 
-	init_board(&p1);
-	init_board(&p2);
+	init_board(&p1_board);
+	init_board(&p2_board);
 
 	Ship p1_fleet[5];
 	Ship p2_fleet[5];
@@ -27,7 +26,12 @@ int main() {
 	init_fleet(p1_fleet);
 	init_fleet(p2_fleet);
 
-	State state = { p1, p2 };
+	State state = {
+		&p1_board,
+		&p2_board,
+		p1_fleet,
+		p2_fleet,
+	};
 
 	// Now wait for user's input
 	while (continue_game == 1) {

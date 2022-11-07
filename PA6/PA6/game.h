@@ -35,6 +35,7 @@ typedef struct {
   char display;
   int length;
   enum Ships type;
+  int hits[5];
   int is_vert;
   int x_lower;
   int y_lower;
@@ -48,8 +49,10 @@ typedef struct {
 } Board;
 
 typedef struct {
-  Board p1;
-  Board p2;
+  Board* p1;
+  Board* p2;
+  Ship* p1_fleet;
+  Ship* p2_fleet;
 } State;
 
 // I want to support a bunch of different colors,
@@ -97,6 +100,6 @@ int game_scene(char input, State* state);
 // -- Game Stuff
 void init_fleet(Ship fleet[]);
 void init_board(Board *board);
-void display_board(Board *board);
+// void display_board(Board *board);
 
 #endif
