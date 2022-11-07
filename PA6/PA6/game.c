@@ -127,10 +127,11 @@ const char* ship_names[] = { "No Ship", "Destroyer", "Submarine", "Cruiser", "Ba
 void init_fleet(Ship fleet[]) {
   for (int i = 0; i < 5; i++) {
     int type = i + 1;
+    int length = ship_lengths[type];
     Ship a_ship = {
       ship_display[type],
-      ship_lengths[type],
-      type, 0, 0, 0, 0, 0
+      length,
+      type, 0, 0, 0, 0, length,
     };
     fleet[i] = a_ship;
   }
@@ -180,7 +181,7 @@ void move_ship(int vert, int horz, State* state) {
 }
 
 void rotate_ship(State* state) {
-  
+
 }
 
 void autoplace_fleet(Ship* fleet) {
