@@ -7,6 +7,7 @@
 *******************************************************************************************/
 
 #include "game.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 // Static game state
@@ -28,7 +29,7 @@ void clear_terminal() {
 int get_menu_key() {
 	int key = 0;
 	scanf(" %d", &key);
-	// printf("Get Menu Key Called: %d\n", key);
+	printf("Get Menu Key Called: %d\n", key);
 	return key;
 }
 
@@ -40,26 +41,11 @@ int sum_array(int nums[], int length) {
   return sum;
 }
 
-// In JavaScript, I would normally just the logical OR operator
-// But it seems like that returns different values in C
-// So this let's us do a default value if val_one is zero.
-int is_zero_default(int val_one, int val_two) {
-  if (val_one != 0) {
-    return val_one;
-  } else {
-    return val_two;
-  }
-}
-
 // I want to print in color, so I found this StackOverflow that lists
 // the ANSI codes to change the print color!
 // https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
-void blue() {
-  printf("\033[0;96m");
-}
-
-void green() {
-  printf("\033[0;32m");
+void color(Colors color) {
+  printf("\033[0;%dm", color);
 }
 
 void reset() {
@@ -69,7 +55,7 @@ void reset() {
 // Since this is the root menu of the game,
 // we don't need to set it up as a game scene.
 void display_main_menu() {
-	printf("Yahtzee Menu:\n");
+	printf("Battleship Menu:\n");
 	printf("1. Play Battleship\n");
 	printf("2. Battleship Rules\n");
 	printf("3. Exit\n");
@@ -92,42 +78,76 @@ int roll_die(void) {
 
 // This method allows us to dynamically start
 // any game scene and enable user navigation
-void goto_scene(int (*scene)(int)) {
-	int continue_scene = 1;
-	int current_input = -1;
+void goto_scene(int (*scene)(char, State*), State* state) {
+  int continue_scene = 1;
+  int current_input = '\0';
 
-	// Start the scene with a garbage input state
 	clear_terminal();
-	continue_scene = (*scene)(current_input);
+	(*scene)(current_input, state);
 
 	// Begin reading user value
 	while (continue_scene == 1) {
-		// Give the option for the user to leave the scene
-		// printf("Press 0 to go back.\n");
-		current_input = get_menu_key();
-
-		if (current_input == 0) {
-			continue_scene = 0;
-		} else {
-			// Call the scene with the updated state
-			clear_terminal();
-			continue_scene = (*scene)(current_input);
-		}
+		current_input = wait_for_input();
+    clear_terminal();
+    // Keep calling the scene until it returns a non-one int
+		continue_scene = (*scene)(current_input, state);
 	}
 }
 
-int rules_scene(int input) {
-  // Normally in a scene, the input would be evaluated.
-  // But since we're just showing the rules, there's
-  // no interactivity to this scene, so just print
-  // the game rules.
-  display_rules();
-  printf("Press 0 to exit.\n");
+int rules_scene(char input, State* state) {
+  if (input == '\0') {
+    display_rules();
+    printf("\nPress any key to go back.\n");
+  } else {
+    return 0;
+  }
 
   // Returning 1 tells the scene manager to wait until the user navigates away
   return 1;
 }
 
-int game_scene(int input) {
+char wait_for_input() {
+  while (1) {
+    // fflush(stdin);
+    system("/bin/stty raw");
+    char in = getchar();
+    system("/bin/stty cooked");
+    if ((in != '\n') && (in != ' ')) {
+      return in;
+    }
+  }
+}
+
+void init_board(Board *board) {
+  for (int x = 0; x < 10; x++) {
+    for (int y = 0; y < 10; y++) {
+      board->tiles[x][y] = '-';
+    }
+  }
+}
+
+void display_board(Board *board) {
+  color(GREEN); printf("  0 1 2 3 4 5 6 7 8 9\n"); reset();
+  for (int x = 0; x < 10; x++) {
+    color(GREEN); printf("%d ", x); reset();
+    for (int y = 0; y < 10; y++) {
+      int tile = board->tiles[x][y];
+      printf("%c ", tile);
+    }
+    printf("\n");
+  }
+}
+
+void display_all_boards(State* state) {
+  printf("Your Board:\n");
+  display_board(&state->p1);
+  printf("\nOpposition's Board:\n");
+  display_board(&state->p2);
+}
+
+int game_scene(char input, State* state) {
+  switch (input) {
+    default: display_all_boards(state); break;
+  }
   return 1;
 }

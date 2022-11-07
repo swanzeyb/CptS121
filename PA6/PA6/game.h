@@ -18,13 +18,69 @@
 #include <stdlib.h> // Gives us access to system function
 #include <time.h> // This gives access to time func used in srand
 
+// The Carrier has 5 cells, Battleship has 4 cells, Cruiser has 3 cells, Submarine has 3 cells, and the Destroyer has 2 cells.
+enum Ships {
+  Destroyer = 2,
+  Submarine = 3,
+  Cruiser = 3,
+  Battleship = 4,
+  Carrier = 5,
+};
+
+typedef struct {
+  char display;
+  int length;
+  Ships type;
+  int is_vert;
+  int x_lower;
+  int y_lower;
+  int x_upper;
+  int y_upper;
+} Ship;
+
+typedef struct {
+  int is_occupied;
+  Ship* who_is;
+  char display;
+} Tile;
+
+typedef struct {
+  Tile tiles[10][10];
+} Board;
+
+typedef struct {
+  Board p1;
+  Board p2;
+} State;
+
+// I want to support a bunch of different colors,
+// and I found out that C supports enums so ima
+// try them out.
+typedef enum {
+  RED = 31,
+  GREEN = 32,
+  YELLOW = 33,
+  BLUE = 34,
+  MAGENTA = 35,
+  CYAN = 36,
+  GRAY = 37,
+  ALT_GRAY = 90,
+  ALT_RED = 91,
+  ALT_GREEN = 92,
+  ALT_YELLOW = 93,
+  ALT_BLUE = 94,
+  ALT_MAGENTA = 95,
+  ALT_CYAN = 96,
+  WHITE = 97,
+} Colors;
+
 // -- Helper functions --
 void clear_terminal();
 int get_menu_key();
+char wait_for_input();
 int sum_array(int nums[], int length);
 int is_zero_default(int val_one, int val_two);
-void blue();
-void green();
+void color(Colors color);
 void reset();
 
 // -- The functions that purely print info to console --
@@ -35,10 +91,12 @@ void display_rules();
 int roll_die(void);
 
 // -- The games main scenes --
-void goto_scene(int (*scene)(int));
-int rules_scene(int input);
-int game_scene(int input);
+void goto_scene(int (*scene)(char, State*), State* state);
+int rules_scene(char input, State* state);
+int game_scene(char input, State* state);
 
-// -- The functions that modify game state --
+// -- Game Stuff
+void init_board(Board *board);
+void display_board(Board *board);
 
 #endif
