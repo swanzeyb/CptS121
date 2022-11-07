@@ -49,10 +49,12 @@ typedef struct {
 } Board;
 
 typedef struct {
-  Board* p1;
-  Board* p2;
+  Board* p1_board;
+  Board* p2_board;
   Ship* p1_fleet;
   Ship* p2_fleet;
+  int is_setup;
+  int curr_place;
 } State;
 
 // I want to support a bunch of different colors,

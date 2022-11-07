@@ -122,6 +122,7 @@ char wait_for_input() {
 const int ship_lengths[] = { 0, 2, 3, 3, 4, 5 };
 // Indicated by 'c' for Carrier, 'b' for Battleship, 'r' for Cruiser, 's' for Submarine, or 'd' for Destroyer
 const char ship_display[] = { '\0', 'd', 's', 'r', 'b', 'c' };
+const char* ship_names[] = { "No Ship", "Destroyer", "Submarine", "Cruiser", "Battleship", "Carrier" };
 
 void init_fleet(Ship fleet[]) {
   for (int i = 0; i < 5; i++) {
@@ -150,7 +151,11 @@ void display_board(Board *board) {
     color(GREEN); printf("%d ", x); reset();
     for (int y = 0; y < 10; y++) {
       int tile = board->display[x][y];
-      printf("%c ", tile);
+      if (tile == '*') { // If it's a hit, make it red
+        color(RED); printf("%c ", tile); reset();
+      } else {
+        printf("%c ", tile);
+      }
     }
     printf("\n");
   }
@@ -158,14 +163,78 @@ void display_board(Board *board) {
 
 void display_all_boards(State* state) {
   printf("Your Board:\n");
-  display_board(state->p1);
+  display_board(state->p1_board);
   printf("\nOpposition's Board:\n");
-  display_board(state->p2);
+  display_board(state->p2_board);
+}
+
+void display_setup_menu() {
+  printf("Welcome to Battleship!\n");
+	printf("1. Manually place ships\n");
+	printf("2. Auto-place ships\n");
+	printf("\nChoose by entering a menu number\n");
+}
+
+void move_ship(int vert, int horz, State* state) {
+
+}
+
+void rotate_ship(State* state) {
+  
+}
+
+void autoplace_fleet(Ship* fleet) {
+
+}
+
+int place_fleet_scene(char input, State* state) {
+  printf("Use WASD to move ship up, down, left, right.\n");
+  printf("Press R to rotate the ship on the board.\n");
+  printf("Hit ENTER when finished placing this piece.\n");
+  display_board(state->p1_board);
+
+  // Get the ship that is being currently placed
+  Ship curr_ship = state->p1_fleet[state->curr_place];
+
+  printf("You're currently placing your %s\n", ship_names[curr_ship.type]);
+
+  switch (input) {
+    case 'W': move_ship(1, 0, state); break;
+    case 'S': move_ship(-1, 0, state); break;
+    case 'A': move_ship(0, -1, state); break;
+    case 'D': move_ship(0, 1, state); break;
+    case 'R': rotate_ship(state); break;
+    case 13:
+      state->curr_place += 1;
+      break;
+  }
+  return 1;
+}
+
+int setup_scene(char input, State* state) {
+  display_setup_menu();
+  switch (input) {
+    case '1':
+      goto_scene(place_fleet_scene, state);
+      autoplace_fleet(state->p2_fleet);
+      return 0; break;
+    case '2':
+      autoplace_fleet(state->p1_fleet);
+      autoplace_fleet(state->p2_fleet);
+      return 0; break;
+  }
+  return 1;
 }
 
 int game_scene(char input, State* state) {
-  switch (input) {
-    default: display_all_boards(state); break;
+  if (state->is_setup == 0) { // If the game hasn't been setup, then setup
+    goto_scene(setup_scene, state);
+    state->is_setup = 1;
   }
-  return 1;
+
+  display_all_boards(state);
+  switch (input) {
+    case 13: return 0; break;
+    default: return 1; break;
+  }
 }

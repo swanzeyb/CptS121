@@ -10,6 +10,7 @@
 
 int main() {
 	srand(time(NULL));
+	system("/bin/stty cooked");
 	
 	int continue_game = 1;
 	int current_menu = -1;
@@ -31,6 +32,7 @@ int main() {
 		&p2_board,
 		p1_fleet,
 		p2_fleet,
+		0, // Has the player placed their pieces?
 	};
 
 	// Now wait for user's input
