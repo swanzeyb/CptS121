@@ -29,7 +29,6 @@ void clear_terminal() {
 int get_menu_key() {
 	int key = 0;
 	scanf(" %d", &key);
-	printf("Get Menu Key Called: %d\n", key);
 	return key;
 }
 
@@ -131,7 +130,9 @@ void init_fleet(Ship fleet[]) {
     Ship a_ship = {
       ship_display[type],
       length,
-      type, 0, 0, 0, 0, length,
+      type,
+      { 0 },
+      0, 0, 1, length,
     };
     fleet[i] = a_ship;
   }
@@ -176,12 +177,69 @@ void display_setup_menu() {
 	printf("\nChoose by entering a menu number\n");
 }
 
-void move_ship(int vert, int horz, State* state) {
+int is_space_occupied(Ship in_theory, State* state) {
+  int is_occupied = 1;
+  if ((in_theory.y_upper <= 10) && (in_theory.y_lower >= 0)) {
+    if ((in_theory.x_upper <= 10) && (in_theory.x_lower >= 0)) {
+      // If the ship is within the bounds of the game board,
+      // check if new placement would conflict with other ships.
+      // for (int i = 0; i < 5; i++) {
+      //   Ship other_ship = state->p1_fleet[i];
+        
+      // }
+      is_occupied = 0;
+    }
+  }
+  return is_occupied;
+}
 
+void move_ship(int vert, int horz, State* state) {
+  Ship* curr_ship = &state->p1_fleet[state->curr_place];
+
+  // Theorize where the ship would be
+  Ship in_theory = *curr_ship;
+  in_theory.y_lower += vert;
+  in_theory.y_upper += vert;
+  in_theory.x_lower += horz;
+  in_theory.x_upper += horz;
+
+  // Now check if it conflicts with bounds or other ships
+  int is_occupied = is_space_occupied(in_theory, state);
+
+  // If there are no conflicts, update the ship
+  if (is_occupied == 0) {
+    curr_ship->x_lower = in_theory.x_lower;
+    curr_ship->y_lower = in_theory.y_lower;
+    curr_ship->x_upper = in_theory.x_upper;
+    curr_ship->y_upper = in_theory.y_upper;
+  }
 }
 
 void rotate_ship(State* state) {
 
+}
+
+void update_boards(State* state, int for_all) {
+  int len = 5;
+  if (for_all != 1) {
+    len = state->curr_place + 1;
+  }
+
+  // Reset Board
+  init_board(state->p1_board);
+
+  // Update main players board
+  for (int i = 0; i < len; i++) {
+    Ship curr_ship = state->p1_fleet[i];
+    // For the bounds of the ship
+    for (int x = curr_ship.x_lower; x < curr_ship.x_upper; x++) {
+      for (int y = curr_ship.y_lower; y < curr_ship.y_upper; y++) {
+        char display = curr_ship.display;
+        state->p1_board->display[y][x] = display;
+        state->p1_board->who_is[y][x] = &state->p1_fleet[i];
+      }
+    }
+  }
 }
 
 void autoplace_fleet(Ship* fleet) {
@@ -189,26 +247,37 @@ void autoplace_fleet(Ship* fleet) {
 }
 
 int place_fleet_scene(char input, State* state) {
-  printf("Use WASD to move ship up, down, left, right.\n");
-  printf("Press R to rotate the ship on the board.\n");
-  printf("Hit ENTER when finished placing this piece.\n");
-  display_board(state->p1_board);
-
   // Get the ship that is being currently placed
   Ship curr_ship = state->p1_fleet[state->curr_place];
 
-  printf("You're currently placing your %s\n", ship_names[curr_ship.type]);
-
-  switch (input) {
-    case 'W': move_ship(1, 0, state); break;
-    case 'S': move_ship(-1, 0, state); break;
-    case 'A': move_ship(0, -1, state); break;
-    case 'D': move_ship(0, 1, state); break;
-    case 'R': rotate_ship(state); break;
+  // Evaluate the input
+  switch (tolower(input)) {
+    case 'w': move_ship(-1, 0, state); break;
+    case 's': move_ship(1, 0, state); break;
+    case 'a': move_ship(0, -1, state); break;
+    case 'd': move_ship(0, 1, state); break;
+    case 'r': rotate_ship(state); break;
     case 13:
       state->curr_place += 1;
       break;
   }
+
+  // Update the display data from inputs
+  update_boards(state, 0);
+
+  if (state->curr_place > 4) {
+    state->curr_place = 0;
+    return 0;
+  }
+
+  // Display the new game state
+  clear_terminal();
+  printf("Use WASD to move ship up, down, left, right.\n");
+  printf("Press R to rotate the ship on the board.\n");
+  printf("Hit ENTER when finished placing this ship.\n\n");
+  display_board(state->p1_board);
+  printf("\nYou're currently placing your %s\n", ship_names[curr_ship.type]);
+
   return 1;
 }
 
