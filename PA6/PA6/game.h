@@ -57,6 +57,11 @@ typedef struct {
   int curr_place;
 } State;
 
+typedef struct {
+  int x;
+  int y;
+} Coord;
+
 // I want to support a bunch of different colors,
 // and I found out that C supports enums so ima
 // try them out.
@@ -86,6 +91,7 @@ int sum_array(int nums[], int length);
 int is_zero_default(int val_one, int val_two);
 void color(Colors color);
 void reset();
+int rand_num(int len);
 
 // -- The functions that purely print info to console --
 void display_main_menu();

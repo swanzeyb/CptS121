@@ -177,7 +177,7 @@ void display_setup_menu() {
 	printf("\nChoose by entering a menu number\n");
 }
 
-int is_space_occupied(Ship in_theory, State* state) {
+int is_space_occupied(Ship in_theory, Board* board) {
   int is_occupied = 1;
   if ((in_theory.y_upper <= 10) && (in_theory.y_lower >= 0)) {
     if ((in_theory.x_upper <= 10) && (in_theory.x_lower >= 0)) {
@@ -187,7 +187,7 @@ int is_space_occupied(Ship in_theory, State* state) {
       is_occupied = 0; // The ship is within the board
       for (int x = in_theory.x_lower; x < in_theory.x_upper; x++) {
         for (int y = in_theory.y_lower; y < in_theory.y_upper; y++) {
-          Ship* who_is = state->p1_board->who_is[y][x];
+          Ship* who_is = board->who_is[y][x];
 
           // Now check if there is a ship in the way
           if ((who_is != NULL) && (who_is->type != in_theory.type)) {
@@ -211,7 +211,7 @@ void move_ship(int vert, int horz, State* state) {
   in_theory.x_upper += horz;
 
   // Now check if it conflicts with bounds or other ships
-  int is_occupied = is_space_occupied(in_theory, state);
+  int is_occupied = is_space_occupied(in_theory, state->p1_board);
 
   // If there are no conflicts, update the ship
   if (is_occupied == 0) {
@@ -222,9 +222,7 @@ void move_ship(int vert, int horz, State* state) {
   }
 }
 
-void rotate_ship(State* state) {
-  Ship* curr_ship = &state->p1_fleet[state->curr_place];
-
+int rotate_ship(Ship* curr_ship, Board* board) {
   // Theorize where the ship would be
   Ship in_theory = *curr_ship;
 
@@ -240,7 +238,7 @@ void rotate_ship(State* state) {
   }
 
   // Now check if it conflicts with bounds or other ships
-  int is_occupied = is_space_occupied(in_theory, state);
+  int is_occupied = is_space_occupied(in_theory, board);
 
   // If there are no conflicts, update the ship
   if (is_occupied == 0) {
@@ -249,38 +247,64 @@ void rotate_ship(State* state) {
     curr_ship->x_upper = in_theory.x_upper;
     curr_ship->y_upper = in_theory.y_upper;
   }
+
+  return is_occupied;
 }
 
-void update_boards(State* state, int for_all) {
-  int len = 5;
-  if (for_all != 1) {
-    len = state->curr_place + 1;
-  }
-
+// These update functions are so messy, they
+// probably could be combined.
+void update_board(Board* board, Ship* fleet, int length) {
   // Reset Board
-  init_board(state->p1_board);
+  init_board(board);
 
   // Update main players board
-  for (int i = 0; i < len; i++) {
-    Ship curr_ship = state->p1_fleet[i];
+  for (int i = 0; i < length; i++) {
+    Ship curr_ship = fleet[i];
     // For the bounds of the ship
     for (int x = curr_ship.x_lower; x < curr_ship.x_upper; x++) {
       for (int y = curr_ship.y_lower; y < curr_ship.y_upper; y++) {
         char display = curr_ship.display;
-        state->p1_board->display[y][x] = display;
-        state->p1_board->who_is[y][x] = &state->p1_fleet[i];
+        board->display[y][x] = display;
+        board->who_is[y][x] = &fleet[i];
       }
     }
   }
 }
 
-void autoplace_fleet(Ship* fleet) {
+int rand_num(int len) {
+  return (rand() % len);
+}
 
+void place_fleet(Board* board, Ship* fleet) {
+  for (int i = 0; i < 5; i++) {
+    Ship* curr_ship = &fleet[i]; // Grab a blank ship
+    int is_occupied = 1;
+
+    // Do random placement until there is no conflict
+    do {
+      // Randomly place it on the board
+      curr_ship->x_lower = rand_num(10);
+      curr_ship->y_lower = rand_num(10);
+      curr_ship->x_upper = curr_ship->x_lower + 1;
+      curr_ship->y_upper = curr_ship->y_lower + curr_ship->length;
+
+      // Try to randomly rotate the ship
+      if (rand_num(2) == 1) {
+        // Rotate ship already checks for collisions
+        is_occupied = rotate_ship(curr_ship, board);
+      } else {
+        is_occupied = is_space_occupied(*curr_ship, board);
+      }
+    } while (is_occupied == 1);
+
+    // After successfull placing, update the board
+    update_board(board, fleet, i + 1);
+  }
 }
 
 int place_fleet_scene(char input, State* state) {
   // Get the ship that is being currently placed
-  Ship curr_ship = state->p1_fleet[state->curr_place];
+  Ship* curr_ship = &state->p1_fleet[state->curr_place];
 
   // Evaluate the input
   switch (tolower(input)) {
@@ -288,14 +312,14 @@ int place_fleet_scene(char input, State* state) {
     case 's': move_ship(1, 0, state); break;
     case 'a': move_ship(0, -1, state); break;
     case 'd': move_ship(0, 1, state); break;
-    case 'r': rotate_ship(state); break;
+    case 'r': rotate_ship(curr_ship, state->p1_board); break;
     case 13:
       state->curr_place += 1;
       break;
   }
 
   // Update the display data from inputs
-  update_boards(state, 0);
+  update_board(state->p1_board, state->p1_fleet, state->curr_place + 1);
 
   if (state->curr_place > 4) {
     state->curr_place = 0;
@@ -308,7 +332,7 @@ int place_fleet_scene(char input, State* state) {
   printf("Press R to rotate the ship on the board.\n");
   printf("Hit ENTER when finished placing this ship.\n\n");
   display_board(state->p1_board);
-  printf("\nYou're currently placing your %s\n", ship_names[curr_ship.type]);
+  printf("\nYou're currently placing your %s\n", ship_names[curr_ship->type]);
 
   return 1;
 }
@@ -318,11 +342,11 @@ int setup_scene(char input, State* state) {
   switch (input) {
     case '1':
       goto_scene(place_fleet_scene, state);
-      autoplace_fleet(state->p2_fleet);
+      place_fleet(state->p2_board, state->p2_fleet);
       return 0; break;
     case '2':
-      autoplace_fleet(state->p1_fleet);
-      autoplace_fleet(state->p2_fleet);
+      place_fleet(state->p1_board, state->p1_fleet);
+      place_fleet(state->p2_board, state->p2_fleet);
       return 0; break;
   }
   return 1;
