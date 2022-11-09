@@ -183,11 +183,18 @@ int is_space_occupied(Ship in_theory, State* state) {
     if ((in_theory.x_upper <= 10) && (in_theory.x_lower >= 0)) {
       // If the ship is within the bounds of the game board,
       // check if new placement would conflict with other ships.
-      // for (int i = 0; i < 5; i++) {
-      //   Ship other_ship = state->p1_fleet[i];
-        
-      // }
-      is_occupied = 0;
+      
+      is_occupied = 0; // The ship is within the board
+      for (int x = in_theory.x_lower; x < in_theory.x_upper; x++) {
+        for (int y = in_theory.y_lower; y < in_theory.y_upper; y++) {
+          Ship* who_is = state->p1_board->who_is[y][x];
+
+          // Now check if there is a ship in the way
+          if ((who_is != NULL) && (who_is->type != in_theory.type)) {
+            is_occupied = 1;
+          }
+        }
+      }
     }
   }
   return is_occupied;
@@ -216,7 +223,32 @@ void move_ship(int vert, int horz, State* state) {
 }
 
 void rotate_ship(State* state) {
+  Ship* curr_ship = &state->p1_fleet[state->curr_place];
 
+  // Theorize where the ship would be
+  Ship in_theory = *curr_ship;
+
+  // If it's horizontal then
+  int x_len = curr_ship->x_upper - curr_ship->x_lower;
+  int y_len = curr_ship->y_upper - curr_ship->y_lower;
+  if (x_len > y_len) {
+    in_theory.y_upper = in_theory.y_lower + in_theory.length;
+    in_theory.x_upper = in_theory.x_lower + 1;
+  } else {
+    in_theory.y_upper = in_theory.y_lower + 1;
+    in_theory.x_upper = in_theory.x_lower + in_theory.length;
+  }
+
+  // Now check if it conflicts with bounds or other ships
+  int is_occupied = is_space_occupied(in_theory, state);
+
+  // If there are no conflicts, update the ship
+  if (is_occupied == 0) {
+    curr_ship->x_lower = in_theory.x_lower;
+    curr_ship->y_lower = in_theory.y_lower;
+    curr_ship->x_upper = in_theory.x_upper;
+    curr_ship->y_upper = in_theory.y_upper;
+  }
 }
 
 void update_boards(State* state, int for_all) {
