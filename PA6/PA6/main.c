@@ -27,12 +27,16 @@ int main() {
 	init_fleet(p1_fleet);
 	init_fleet(p2_fleet);
 
+	Coord cursor = { -1, -1 };
+
 	State state = {
 		&p1_board,
 		&p2_board,
 		p1_fleet,
 		p2_fleet,
-		0, // Has the player placed their pieces?
+		0, // is_setup
+		0, // curr_place
+		&cursor,
 	};
 
 	// Now wait for user's input

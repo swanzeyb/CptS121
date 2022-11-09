@@ -49,18 +49,19 @@ typedef struct {
 } Board;
 
 typedef struct {
+  int x;
+  int y;
+} Coord;
+
+typedef struct {
   Board* p1_board;
   Board* p2_board;
   Ship* p1_fleet;
   Ship* p2_fleet;
   int is_setup;
   int curr_place;
+  Coord* cursor;
 } State;
-
-typedef struct {
-  int x;
-  int y;
-} Coord;
 
 // I want to support a bunch of different colors,
 // and I found out that C supports enums so ima
