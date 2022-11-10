@@ -18,6 +18,7 @@
 #include <stdlib.h> // Gives us access to system function
 #include <time.h> // This gives access to time func used in srand
 #include <ctype.h>
+#include <conio.h>
 
 // The Carrier has 5 cells, Battleship has 4 cells, Cruiser has 3 cells, Submarine has 3 cells, and the Destroyer has 2 cells.
 enum Ships {

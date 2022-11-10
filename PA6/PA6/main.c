@@ -10,7 +10,7 @@
 
 int main() {
 	srand(time(NULL));
-	system("/bin/stty cooked");
+	// system("/bin/stty cooked");
 	
 	int continue_game = 1;
 	int current_menu = -1;

@@ -74,15 +74,16 @@ void display_rules() {
   printf("Player's take turns guessing by calling out the coordinates. The opponent responds with 'hit' or 'miss' as appropriate.\n");
   printf("When all of the squares that one your ships occupies have been hit, the ship will be sunk. You should announce 'hit and sunk'.\n");
   printf("As soon as all of one player's ships have been sunk, the game ends.\n");
-  // I DID NOT WRITE THESE RULES, they are cited above.
+  // See citation above.
 }
 
 char wait_for_input() {
   while (1) {
     // fflush(stdin);
-    system("/bin/stty raw");
-    char in = getchar();
-    system("/bin/stty cooked");
+    // system("/bin/stty raw");
+    // char in = getchar();
+    // system("/bin/stty cooked");
+    char in = _getch();
     if ((in != '\n') && (in != ' ')) {
       return in;
     }
