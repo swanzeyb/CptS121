@@ -27,6 +27,9 @@ int main() {
 	init_fleet(p1_fleet);
 	init_fleet(p2_fleet);
 
+	Stats p1_stats = { 0 };
+	Stats p2_stats = { 0 };
+
 	Coord cursor = { -1, -1 };
 
 	State state = {
@@ -34,6 +37,8 @@ int main() {
 		&p2_board,
 		p1_fleet,
 		p2_fleet,
+		&p1_stats,
+		&p2_stats,
 		0, // is_setup
 		0, // rounds
 		0, // curr_place

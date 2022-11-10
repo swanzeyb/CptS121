@@ -86,6 +86,12 @@ void wait_for_continue() {
   wait_for_input();
 }
 
+// I want C++ for more dynamic options this is gross af no cap
+FILE* open_log() {
+  FILE* record = fopen("battleship.log", "a");
+  return record;
+}
+
 // This method allows us to dynamically start
 // any game scene and enable user navigation
 void goto_scene(int (*scene)(char, State*), State* state) {
@@ -242,12 +248,12 @@ void display_strike(Board* board, Coord* cursor, int show_cursor) {
       }
 
       // Hide other players ships
-      // switch (tile) {
-      //   case '*': break;
-      //   case '+': break;
-      //   case 'x': break;
-      //   default: tile = '-'; break;
-      // }
+      switch (tile) {
+        case '*': break;
+        case '+': break;
+        case 'x': break;
+        default: tile = '-'; break;
+      }
 
       printf("%c ", tile);
     }
@@ -462,13 +468,18 @@ int attacked_scene(char input, State* state) {
   int x = rand_num(10);
   int y = rand_num(10);
   Ship* who_is = state->p1_board->who_is[x][y];
+  FILE* log = open_log();
+  fprintf(log, "Player 2 targeted Player 1 at ROW %d COL %d\n", y, x);
 
   if (who_is != NULL) {
     // It's a hit
     // Update the ships hits
     state->p1_board->hits[x][y] = 1;
+    state->p2_stats->total_hits += 1;
+    state->p2_stats->total_shots += 1;
     update_board(state->p1_board, state->p1_fleet, 5);
 
+    fprintf(log, "Player 2 hit Player 1's %s\n", ship_names[who_is->type]);
     printf("Their missle hit your %s!\n\n", ship_names[who_is->type]);
     display_board(state->p1_board);
     printf("\n");
@@ -476,27 +487,36 @@ int attacked_scene(char input, State* state) {
   } else {
     // It's not a hit
     state->p1_board->misses[x][y] = 1;
+    state->p2_stats->total_misses += 1;
+    state->p2_stats->total_shots += 1;
     update_board(state->p1_board, state->p1_fleet, 5);
 
+    fprintf(log, "Player 2 missed\n");
     printf("Their missle missed!\n\n");
     display_board(state->p1_board);
     printf("\n");
     wait_for_continue();
   }
 
+  fclose(log);
   return 0;
 }
 
 int kaboom_scene(char input, State* state) {
   Coord cursor = *state->cursor;
   Ship* who_is = state->p2_board->who_is[cursor.x][cursor.y];
+  FILE* log = open_log();
+  fprintf(log, "Player 1 targeted Player 2 at ROW %d COL %d\n", cursor.y, cursor.x);
 
   if (who_is != NULL) {
     // It's a hit
     // Update the ships hits
     state->p2_board->hits[cursor.x][cursor.y] = 1;
+    state->p1_stats->total_hits += 1;
+    state->p1_stats->total_shots += 1;
     update_board(state->p2_board, state->p2_fleet, 5);
 
+    fprintf(log, "Player 1 hit Player 2's %s\n", ship_names[who_is->type]);
     printf("The missle hit their %s!\n\n", ship_names[who_is->type]);
     display_strike(state->p2_board, state->cursor, 0);
     printf("\n");
@@ -504,14 +524,18 @@ int kaboom_scene(char input, State* state) {
   } else {
     // It's not a hit
     state->p2_board->misses[cursor.x][cursor.y] = 1;
+    state->p1_stats->total_misses += 1;
+    state->p1_stats->total_shots += 1;
     update_board(state->p2_board, state->p2_fleet, 5);
 
+    fprintf(log, "Player 1 missed\n");
     printf("The missle missed!\n\n");
     display_strike(state->p2_board, state->cursor, 0);
     printf("\n");
     wait_for_continue();
   }
 
+  fclose(log);
   return 0;
 }
 
@@ -540,10 +564,59 @@ int strike_scene(char input, State* state) {
   return 1;
 }
 
+/*
+  int total_hits;
+  int total_misses;
+  int total_shots;
+  double hits_to_misses;
+  int is_winner;
+*/
+
+void calculate_stats(Stats* stats) {
+  stats->hits_to_misses = (double)stats->total_hits / (double)stats->total_misses;
+}
+
+void log_stats(Stats* stats, FILE* log) {
+  fprintf(log, "Total Hits: %d\n", stats->total_hits);
+  fprintf(log, "Total Misses: %d\n", stats->total_misses);
+  fprintf(log, "Total Shots: %d\n", stats->total_shots);
+  fprintf(log, "Hits to Misses Ratio: %.2f\n", stats->hits_to_misses);
+  fprintf(log, "Is Winner: %d\n", stats->is_winner);
+}
+
 int game_scene(char input, State* state) {
   if (state->is_setup == 0) { // If the game hasn't been setup, then setup
     goto_scene(setup_scene, state);
     state->is_setup = 1;
+  }
+
+  // Check for any winners
+  int winner = -1;
+  if (state->p1_stats->total_hits == 17) {
+    winner = 1;
+    state->p1_stats->is_winner = 1;
+  } else if (state->p2_stats->total_hits == 17) {
+    winner = 2;
+    state->p2_stats->is_winner = 1;
+  }
+
+  if (winner != -1) {
+    FILE* log = open_log();
+    fprintf(log, "Player %d has won!\n", winner);
+    printf("Player %d has won!\n\n", winner);
+
+    calculate_stats(state->p1_stats);
+    fprintf(log, "Player 1 Stats:\n");
+    log_stats(state->p1_stats, log);
+
+    calculate_stats(state->p2_stats);
+    fprintf(log, "Player 2 Stats:\n");
+    log_stats(state->p2_stats, log);
+
+    fprintf(log, "End\n");
+    fclose(log);
+    wait_for_continue();
+    return 0;
   }
 
   // Show the game boards
