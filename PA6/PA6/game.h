@@ -60,6 +60,7 @@ typedef struct {
   Ship* p1_fleet;
   Ship* p2_fleet;
   int is_setup;
+  int rounds;
   int curr_place;
   Coord* cursor;
 } State;

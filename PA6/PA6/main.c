@@ -35,6 +35,7 @@ int main() {
 		p1_fleet,
 		p2_fleet,
 		0, // is_setup
+		0, // rounds
 		0, // curr_place
 		&cursor,
 	};

@@ -158,20 +158,20 @@ void refresh_board(Board* board) {
   }
 }
 
-void display_board(Board* board, int only_hits) {
+void display_board(Board* board) {
   color(GREEN); printf("  0 1 2 3 4 5 6 7 8 9\n"); reset();
   for (int x = 0; x < 10; x++) {
     color(GREEN); printf("%d ", x); reset();
     for (int y = 0; y < 10; y++) {
 
       // Get the current tile for this board
-      int tile = board->display[x][y];
+      int tile = board->display[y][x];
 
       // Set the color depending on type of char
       switch (tile) {
         case '*': color(RED); break; // Strike
         case '+': color(RED); break; // Cursor
-        case 'x': color(BLUE); break; // Miss
+        case 'x': color(ALT_CYAN); break; // Miss
         case 'c': color(ALT_MAGENTA); break; // Carrier
         case 'd': color(ALT_MAGENTA); break; // Destroyer
         case 'r': color(ALT_MAGENTA); break; // Cruiser
@@ -226,12 +226,6 @@ void display_strike(Board* board, Coord* cursor, int show_cursor) {
     for (int y = 0; y < 10; y++) {
       char tile = '\0';
 
-      // Check if there is a miss
-      // int miss = board->misses[y][x];
-      // if (miss == 1) {
-      //   tile = 'x';
-      // }
-
       // Check if there is a cursor
       if ((cursor->x == y) && (cursor->y == x) && (show_cursor == 1)) { // I messed up, the coords are switched.
         tile = '+';
@@ -264,7 +258,7 @@ void display_strike(Board* board, Coord* cursor, int show_cursor) {
 
 void display_all_boards(State* state) {
   printf("Your Board:\n");
-  display_board(state->p1_board, 0);
+  display_board(state->p1_board);
   printf("\nOpposition's Board:\n");
   display_strike(state->p2_board, state->cursor, 0);
 }
@@ -387,7 +381,7 @@ int rand_num(int len) {
   return (rand() % len);
 }
 
-void place_fleet(Board* board, Ship* fleet) {
+void rand_place_fleet(Board* board, Ship* fleet) {
   for (int i = 0; i < 5; i++) {
     Ship* curr_ship = &fleet[i]; // Grab a blank ship
     int is_occupied = 1;
@@ -443,7 +437,7 @@ int place_fleet_scene(char input, State* state) {
   printf("Use WASD to move ship up, down, left, right.\n");
   printf("Press R to rotate the ship on the board.\n");
   printf("Hit ENTER when finished placing this ship.\n\n");
-  display_board(state->p1_board, 0);
+  display_board(state->p1_board);
   printf("\nYou're currently placing your %s\n", ship_names[curr_ship->type]);
 
   return 1;
@@ -454,14 +448,43 @@ int setup_scene(char input, State* state) {
   switch (input) {
     case '1':
       goto_scene(place_fleet_scene, state);
-      place_fleet(state->p2_board, state->p2_fleet);
+      rand_place_fleet(state->p2_board, state->p2_fleet);
       return 0; break;
     case '2':
-      place_fleet(state->p1_board, state->p1_fleet);
-      place_fleet(state->p2_board, state->p2_fleet);
+      rand_place_fleet(state->p1_board, state->p1_fleet);
+      rand_place_fleet(state->p2_board, state->p2_fleet);
       return 0; break;
   }
   return 1;
+}
+
+int attacked_scene(char input, State* state) {
+  int x = rand_num(10);
+  int y = rand_num(10);
+  Ship* who_is = state->p1_board->who_is[x][y];
+
+  if (who_is != NULL) {
+    // It's a hit
+    // Update the ships hits
+    state->p1_board->hits[x][y] = 1;
+    update_board(state->p1_board, state->p1_fleet, 5);
+
+    printf("Their missle hit your %s!\n\n", ship_names[who_is->type]);
+    display_board(state->p1_board);
+    printf("\n");
+    wait_for_continue();
+  } else {
+    // It's not a hit
+    state->p1_board->misses[x][y] = 1;
+    update_board(state->p1_board, state->p1_fleet, 5);
+
+    printf("Their missle missed!\n\n");
+    display_board(state->p1_board);
+    printf("\n");
+    wait_for_continue();
+  }
+
+  return 0;
 }
 
 int kaboom_scene(char input, State* state) {
@@ -523,18 +546,22 @@ int game_scene(char input, State* state) {
     state->is_setup = 1;
   }
 
-  // switch (input) {
-  //   case '\r': return 0; break;
-  //   default: return 1; break;
-  // }
-
   // Show the game boards
   clear_terminal();
   display_all_boards(state);
-  printf("\nReady to strike?\n");
-  wait_for_continue();
 
-  goto_scene(strike_scene, state);
+  if ((state->rounds % 2) == 0) {
+    // Let the player attack the computer
+    printf("\nReady to strike? ");
+    wait_for_continue();
+    goto_scene(strike_scene, state);
+  } else {
+    // Let the computer attack back
+    color(YELLOW); printf("\nMISSLE INCOMING! "); reset();
+    wait_for_continue();
+    goto_scene(attacked_scene, state);
+  }
 
+  state->rounds += 1;
   return 1;
 }
