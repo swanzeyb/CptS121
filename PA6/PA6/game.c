@@ -93,7 +93,7 @@ void goto_scene(int (*scene)(char, State*), State* state) {
   int current_input = '\0';
 
 	clear_terminal();
-	(*scene)(current_input, state);
+	continue_scene = (*scene)(current_input, state);
 
 	// Begin reading user value
 	while (continue_scene == 1) {
@@ -130,7 +130,6 @@ void init_fleet(Ship fleet[]) {
       ship_display[type],
       length,
       type,
-      { 0 },
       0, 0, 1, length,
     };
     fleet[i] = a_ship;
@@ -141,13 +140,20 @@ void init_board(Board* board) {
   for (int x = 0; x < 10; x++) {
     for (int y = 0; y < 10; y++) {
       char tile = board->display[y][x];
-      if (tile == '~' || tile == '+') {
-        // It's a miss, so just reset the who_is value
-        board->who_is[y][x] = NULL;
-      } else {
-        board->who_is[y][x] = NULL; // Set a null pointer because there is no ship here yet
-        board->display[y][x] = '-'; // The default graphic is this lil' dude
-      }
+      board->who_is[y][x] = NULL; // Set a null pointer because there is no ship here yet
+      board->display[y][x] = '-'; // The default graphic is this lil' dude
+      board->misses[y][x] = 0;
+      board->hits[y][x] = 0;
+    }
+  }
+}
+
+void refresh_board(Board* board) {
+  for (int x = 0; x < 10; x++) {
+    for (int y = 0; y < 10; y++) {
+      char tile = board->display[y][x];
+      board->who_is[y][x] = NULL; // Set a null pointer because there is no ship here yet
+      board->display[y][x] = '-'; // The default graphic is this lil' dude
     }
   }
 }
@@ -157,11 +163,15 @@ void display_board(Board* board, int only_hits) {
   for (int x = 0; x < 10; x++) {
     color(GREEN); printf("%d ", x); reset();
     for (int y = 0; y < 10; y++) {
+
+      // Get the current tile for this board
       int tile = board->display[x][y];
+
+      // Set the color depending on type of char
       switch (tile) {
         case '*': color(RED); break; // Strike
         case '+': color(RED); break; // Cursor
-        case '~': color(CYAN); break; // Miss
+        case '~': color(BLUE); break; // Miss
         case 'c': color(ALT_MAGENTA); break; // Carrier
         case 'd': color(ALT_MAGENTA); break; // Destroyer
         case 'r': color(ALT_MAGENTA); break; // Cruiser
@@ -169,38 +179,85 @@ void display_board(Board* board, int only_hits) {
         case 'b': color(ALT_MAGENTA); break; // Battleship
         default: reset();
       }
-      if (only_hits == 1) {
-        reset();
-        printf("- ");
-      } else {
-        printf("%c ", tile);
-      }
+
+       printf("%c ", tile);
     }
+    reset();
     printf("\n");
   }
 }
 
-void display_cursor(Board* board) {
+void start_cursor(Coord* cursor) {
+  cursor->x = 4;
+  cursor->y = 4;
+}
+
+void stop_cursor(Coord* cursor) {
+  cursor->x = -1;
+  cursor->y = -1;
+}
+
+int is_cursor_active(Coord* cursor) {
+  if ((cursor->x == -1) || (cursor->y == -1)) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
+void move_cursor(int vert, int horz, State* state) {
+  Coord in_theory = *state->cursor;
+  in_theory.x += horz;
+  in_theory.y += vert;
+
+  if ((in_theory.y <= 10) && (in_theory.y >= 0)) {
+    if ((in_theory.x <= 10) && (in_theory.x >= 0)) {
+      // If cursor is in bounds, display it
+      state->cursor->x = in_theory.x;
+      state->cursor->y = in_theory.y;
+    }
+  }
+}
+
+void display_strike(Board* board, Coord* cursor, int show_cursor) {
   color(GREEN); printf("  0 1 2 3 4 5 6 7 8 9\n"); reset();
   for (int x = 0; x < 10; x++) {
     color(GREEN); printf("%d ", x); reset();
     for (int y = 0; y < 10; y++) {
-      int tile = board->display[x][y];
+      char tile = '\0';
+
+      // Check if there is a miss
+      // int miss = board->misses[y][x];
+      // if (miss == 1) {
+      //   tile = '~';
+      // }
+
+      // Check if there is a cursor
+      if ((cursor->x == y) && (cursor->y == x) && (show_cursor == 1)) { // I messed up, the coords are switched.
+        tile = '+';
+      } else {
+        tile = board->display[y][x];
+      }
+
+      // Set the color depending on type of char
       switch (tile) {
         case '*': color(RED); break; // Strike
         case '+': color(RED); break; // Cursor
         case '~': color(CYAN); break; // Miss
         default: reset();
       }
-      char display = '\0';
-      switch (tile) {
-        case '*': display = '*'; break;
-        case '+': display = '+'; break;
-        case '~': display = '~'; break;
-        default: display = '-'; break;
-      }
-      printf("%c ", display);
+
+      // Hide other players ships
+      // switch (tile) {
+      //   case '*': break;
+      //   case '+': break;
+      //   case '~': break;
+      //   default: tile = '-'; break;
+      // }
+
+      printf("%c ", tile);
     }
+    reset();
     printf("\n");
   }
 }
@@ -209,7 +266,7 @@ void display_all_boards(State* state) {
   printf("Your Board:\n");
   display_board(state->p1_board, 0);
   printf("\nOpposition's Board:\n");
-  display_board(state->p2_board, 1);
+  display_strike(state->p2_board, state->cursor, 0);
 }
 
 void display_setup_menu() {
@@ -295,31 +352,33 @@ int rotate_ship(Ship* curr_ship, Board* board) {
 
 void update_board(Board* board, Ship* fleet, int length) {
   // Reset Board
-  init_board(board);
+  refresh_board(board);
 
-  // Update main players board
+  // Update display for where the ships are
   for (int i = 0; i < length; i++) {
     Ship curr_ship = fleet[i];
 
     // For the bounds of the ship
     for (int x = curr_ship.x_lower; x < curr_ship.x_upper; x++) {
       for (int y = curr_ship.y_lower; y < curr_ship.y_upper; y++) {
-        // Look if it's hit
-        int x_len = curr_ship.x_upper - x;
-        int y_len = curr_ship.y_upper - y;
-        int hit_lookup = (x_len * y_len) - 1;
-
-        // Display the correct character
-        char display = '\0';
-        int hit = curr_ship.hits[hit_lookup];
-        if (hit == 1) {
-          display = '*';
-        } else if (board->display[y][x] != '~') {
-          display = curr_ship.display;
-        }
-        board->display[y][x] = display;
+        board->display[y][x] = curr_ship.display;;
         board->who_is[y][x] = &fleet[i];
       }
+    }
+  }
+
+  // Update display for hits and misses
+  for (int x = 0; x < 10; x++) {
+    for(int y = 0; y < 10; y++) {
+      char display = board->display[y][x];
+      int hit = board->hits[y][x];
+      int miss = board->misses[y][x];
+      if (hit == 1) {
+        display = '*';
+      } else if (miss == 1) {
+        display = '~';
+      }
+      board->display[y][x] = display;
     }
   }
 }
@@ -366,7 +425,7 @@ int place_fleet_scene(char input, State* state) {
     case 'a': move_ship(0, -1, state); break;
     case 'd': move_ship(0, 1, state); break;
     case 'r': rotate_ship(curr_ship, state->p1_board); break;
-    case 13:
+    case '\r':
       state->curr_place += 1;
       break;
   }
@@ -405,68 +464,28 @@ int setup_scene(char input, State* state) {
   return 1;
 }
 
-void start_cursor(Coord* cursor) {
-  cursor->x = 4;
-  cursor->y = 4;
-}
-
-void stop_cursor(Coord* cursor) {
-  cursor->x = -1;
-  cursor->y = -1;
-}
-
-int is_cursor_active(Coord* cursor) {
-  if ((cursor->x == -1) || (cursor->y == -1)) {
-    return 0;
-  } else {
-    return 1;
-  }
-}
-
-void update_cursor(Coord* last, Coord* next, Board* board) {
-  if (is_cursor_active(next)) {
-    char last_display = board->display[last->y][last->x];
-    char display = '-';
-    if ((last_display == '~') || (last_display == '*')) {
-      display = last_display;
-    }
-    board->display[last->y][last->x] = display;
-    board->display[next->y][next->x] = '+';
-  } else {
-    board->display[last->y][last->x] = '-';
-  }
-}
-
-void move_cursor(int vert, int horz, State* state) {
-  Coord in_theory = *state->cursor;
-  in_theory.x += horz;
-  in_theory.y += vert;
-
-  if ((in_theory.y <= 10) && (in_theory.y >= 0)) {
-    if ((in_theory.x <= 10) && (in_theory.x >= 0)) {
-      // If cursor is in bounds, display it
-      update_cursor(state->cursor, &in_theory, state->p2_board);
-      state->cursor->x = in_theory.x;
-      state->cursor->y = in_theory.y;
-    }
-  }
-}
-
 int kaboom_scene(char input, State* state) {
   Coord cursor = *state->cursor;
-  Ship* who_is_cursor = state->p2_board->who_is[cursor.y][cursor.x];
+  Ship* who_is = state->p2_board->who_is[cursor.x][cursor.y];
 
-  if (who_is_cursor != NULL) {
+  if (who_is != NULL) {
     // It's a hit
-    // Update their fleet
-    printf("The missle hit their %s!\n", ship_names[who_is_cursor->type]);
+    // Update the ships hits
+    state->p2_board->hits[cursor.x][cursor.y] = 1;
+    update_board(state->p2_board, state->p2_fleet, 5);
+
+    printf("The missle hit their %s!\n\n", ship_names[who_is->type]);
+    display_strike(state->p2_board, state->cursor, 0);
+    printf("\n");
     wait_for_continue();
   } else {
     // It's not a hit
-    state->p2_board->display[cursor.y][cursor.x] = '~';
-    stop_cursor(state->cursor);
-    update_cursor(state->cursor, state->cursor, state->p2_board);
-    printf("The missle missed!\n");
+    state->p2_board->misses[cursor.x][cursor.y] = 1;
+    update_board(state->p2_board, state->p2_fleet, 5);
+
+    printf("The missle missed!\n\n");
+    display_strike(state->p2_board, state->cursor, 0);
+    printf("\n");
     wait_for_continue();
   }
 
@@ -479,22 +498,20 @@ int strike_scene(char input, State* state) {
     case 's': move_cursor(1, 0, state); break;
     case 'a': move_cursor(0, -1, state); break;
     case 'd': move_cursor(0, 1, state); break;
-    case 13:
+    case '\r':
       // Kaboom
       goto_scene(kaboom_scene, state);
       stop_cursor(state->cursor);
-      update_cursor(state->cursor, state->cursor, state->p2_board);
       return 0;
       break;
   }
 
   if (is_cursor_active(state->cursor) != 1) {
     start_cursor(state->cursor);
-    update_cursor(state->cursor, state->cursor, state->p2_board);
   }
 
   printf("Use WASD to select a tile to strike!\n\n");
-  display_cursor(state->p2_board);
+  display_strike(state->p2_board, state->cursor, 1);
   printf("\nPress ENTER to send the missle when ready.\n");
 
   return 1;
@@ -506,15 +523,18 @@ int game_scene(char input, State* state) {
     state->is_setup = 1;
   }
 
+  // switch (input) {
+  //   case '\r': return 0; break;
+  //   default: return 1; break;
+  // }
+
+  // Show the game boards
   clear_terminal();
   display_all_boards(state);
-  printf("\n");
+  printf("\nReady to strike?\n");
   wait_for_continue();
 
   goto_scene(strike_scene, state);
 
-  switch (input) {
-    case 13: return 0; break;
-    default: return 1; break;
-  }
+  return 1;
 }

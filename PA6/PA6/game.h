@@ -36,7 +36,6 @@ typedef struct {
   char display;
   int length;
   enum Ships type;
-  int hits[5];
   int x_lower;
   int y_lower;
   int x_upper;
@@ -46,6 +45,8 @@ typedef struct {
 typedef struct {
   Ship* who_is[10][10];
   char display[10][10];
+  int misses[10][10];
+  int hits[10][10];
 } Board;
 
 typedef struct {
