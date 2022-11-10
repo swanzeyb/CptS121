@@ -171,7 +171,7 @@ void display_board(Board* board, int only_hits) {
       switch (tile) {
         case '*': color(RED); break; // Strike
         case '+': color(RED); break; // Cursor
-        case '~': color(BLUE); break; // Miss
+        case 'x': color(BLUE); break; // Miss
         case 'c': color(ALT_MAGENTA); break; // Carrier
         case 'd': color(ALT_MAGENTA); break; // Destroyer
         case 'r': color(ALT_MAGENTA); break; // Cruiser
@@ -229,7 +229,7 @@ void display_strike(Board* board, Coord* cursor, int show_cursor) {
       // Check if there is a miss
       // int miss = board->misses[y][x];
       // if (miss == 1) {
-      //   tile = '~';
+      //   tile = 'x';
       // }
 
       // Check if there is a cursor
@@ -243,7 +243,7 @@ void display_strike(Board* board, Coord* cursor, int show_cursor) {
       switch (tile) {
         case '*': color(RED); break; // Strike
         case '+': color(RED); break; // Cursor
-        case '~': color(CYAN); break; // Miss
+        case 'x': color(ALT_CYAN); break; // Miss
         default: reset();
       }
 
@@ -251,7 +251,7 @@ void display_strike(Board* board, Coord* cursor, int show_cursor) {
       // switch (tile) {
       //   case '*': break;
       //   case '+': break;
-      //   case '~': break;
+      //   case 'x': break;
       //   default: tile = '-'; break;
       // }
 
@@ -278,8 +278,8 @@ void display_setup_menu() {
 
 int is_space_occupied(Ship in_theory, Board* board) {
   int is_occupied = 1;
-  if ((in_theory.y_upper <= 10) && (in_theory.y_lower >= 0)) {
-    if ((in_theory.x_upper <= 10) && (in_theory.x_lower >= 0)) {
+  if ((in_theory.y_upper < 10) && (in_theory.y_lower >= 0)) {
+    if ((in_theory.x_upper < 10) && (in_theory.x_lower >= 0)) {
       // If the ship is within the bounds of the game board,
       // check if new placement would conflict with other ships.
       
@@ -376,7 +376,7 @@ void update_board(Board* board, Ship* fleet, int length) {
       if (hit == 1) {
         display = '*';
       } else if (miss == 1) {
-        display = '~';
+        display = 'x';
       }
       board->display[y][x] = display;
     }
