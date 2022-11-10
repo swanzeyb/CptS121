@@ -64,9 +64,17 @@ void display_main_menu() {
 void display_rules() {
   /*
     The following rules were directly taken from an online source.
-    https://cardgames.io/yahtzee/
+    https://www.cs.nmsu.edu/~bdu/TA/487/brules.htm
   */
   printf("How to Battleship:\n");
+  printf("The object of Battleship is to try and sink all of the other player's before they sink all of your ships. All of the other player's ships are somewhere on his/her board.  You try and hit them by calling out the coordinates of one of the squares on the board.  The other player also tries to hit your ships by calling out coordinates.  Neither you nor the other player can see the other's board so you must try to guess where they are.  Each board in the physical game has two grids:  the lower (horizontal) section for the player's ships and the upper part (vertical during play) for recording the player's guesses.\n");
+  printf("Each player places the 5 ships somewhere on their board.  The ships can only be placed vertically or horizontally. Diagonal placement is not allowed. No part of a ship may hang off the edge of the board.  Ships may not overlap each other.  No ships may be placed on another ship.\n");
+  printf("Once the guessing begins, the players may not move the ships.\n");
+  printf("The 5 ships are:  Carrier (occupies 5 spaces), Battleship (4), Cruiser (3), Submarine (3), and Destroyer (2).\n");
+  printf("Player's take turns guessing by calling out the coordinates. The opponent responds with 'hit' or 'miss' as appropriate.\n");
+  printf("When all of the squares that one your ships occupies have been hit, the ship will be sunk. You should announce 'hit and sunk'.\n");
+  printf("As soon as all of one player's ships have been sunk, the game ends.\n");
+  // I DID NOT WRITE THESE RULES, they are cited above.
 }
 
 char wait_for_input() {
@@ -563,14 +571,6 @@ int strike_scene(char input, State* state) {
 
   return 1;
 }
-
-/*
-  int total_hits;
-  int total_misses;
-  int total_shots;
-  double hits_to_misses;
-  int is_winner;
-*/
 
 void calculate_stats(Stats* stats) {
   stats->hits_to_misses = (double)stats->total_hits / (double)stats->total_misses;
