@@ -17,7 +17,7 @@
 #include <stdio.h> // Include our standard functions for interacting with the IO stream
 #include <stdlib.h> // Gives us access to system function
 #include <time.h> // This gives access to time func used in srand
-#include <stdbool.h> // I'm tired of working with 1's and 0's
+#include <stdbool.h> // I prefer bools over ints
 
 // I dev on a Mac, graders use Windows
 #if defined(_WIN64) || defined(_WIN32)
