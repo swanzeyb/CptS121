@@ -24,9 +24,7 @@
   #include <conio.h>
 #endif
 
-// I know the boilerplate code was using these arrays, but I like enums better
-
-// const char *suit[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
+const char *suit_name[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
 typedef enum {
   SUIT_HEARTS = 0,
   SUIT_DIAMONDS = 1,
@@ -34,11 +32,52 @@ typedef enum {
   SUIT_SPADES = 3,
 } Suits;
 
-// const char *face[13] = {"Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
-// typedef enum {
-// } Faces;
+const char *face_name[13] = {"Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
+typedef enum {
+  FACE_ACE = 0,
+  FACE_DEUCE = 1,
+  FACE_THREE = 2,
+  FACE_FOUR = 3,
+  FACE_FIVE = 4,
+  FACE_SIX = 5,
+  FACE_SEVEN = 6,
+  FACE_EIGHT = 7,
+  FACE_NINE = 8,
+  FACE_TEN = 9,
+  FACE_JACK = 10,
+  FACE_QUEEN = 11,
+  FACE_KING = 12,
+} Faces;
 
 typedef struct {
+  Suits suit;
+  Faces face;
+  bool used;
+} Card;
+
+const char *rank_name[9] = {"High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"};
+typedef enum {
+  RANK_STRAIGHT_FLUSH = 8,
+  RANK_FOUR_OF_A_KIND = 7,
+  RANK_FULL_HOUSE = 6,
+  RANK_FLUSH = 5,
+  RANK_STRAIGHT = 4,
+  RANK_THREE_KIND = 3,
+  RANK_TWO_PAIR = 2,
+  RANK_PAIR = 1,
+  RANK_HIGH_CARD = 0,
+} Rank;
+
+typedef struct {
+  Card cards[5];
+  Card* max;
+  Rank rank;
+} Hand;
+
+typedef struct {
+  Card deck[52];
+  Hand p1_hand;
+  Hand p2_hand;
 } State;
 
 // I want to support a bunch of different colors,
@@ -70,6 +109,7 @@ int is_zero_default(int val_one, int val_two);
 void color(Colors color);
 void reset();
 int rand_num(int len);
+int arr_max(int arr[], int len);
 
 // -- The functions that purely print info to console --
 void display_main_menu();
@@ -80,8 +120,8 @@ void display_rules();
 
 // -- The games main scenes --
 void goto_scene(int (*scene)(char, State*), State* state);
-int rules_scene(char input, State* state);
-int game_scene(char input, State* state);
+bool rules_scene(char input, State* state);
+bool game_scene(char input, State* state);
 
 // -- Game Stuff
 // void init_fleet(Ship fleet[]);

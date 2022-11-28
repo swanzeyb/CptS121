@@ -86,6 +86,16 @@ int rand_num(int len) {
   return (rand() % len);
 }
 
+int arr_max(int arr[], int len) {
+  int max = arr[0];
+  for (int i = 0; i < len; i ++) {
+    if (arr[i] > max) {
+      max = arr[i];
+    }
+  }
+  return max;
+}
+
 // Since this is the root menu of the game,
 // we don't need to set it up as a game scene.
 void display_main_menu() {
@@ -125,17 +135,28 @@ void wait_for_continue() {
   wait_for_input();
 }
 
+// Game Logic
+bool straight_flush() {}
+bool four_kind() {}
+bool full_house() {}
+bool flush() {}
+bool straight() {}
+bool three_kind() {}
+bool two_pair() {}
+bool pair() {}
+bool high_card() {}
+
 // This method allows us to dynamically start
 // any game scene and enable user navigation
 void goto_scene(int (*scene)(char, State*), State* state) {
-  int continue_scene = 1;
+  int continue_scene = true;
   int current_input = '\0';
 
 	clear_terminal();
 	continue_scene = (*scene)(current_input, state);
 
 	// Begin reading user value
-	while (continue_scene == 1) {
+	while (continue_scene == true) {
 		current_input = wait_for_input();
     clear_terminal();
     // Keep calling the scene until it returns a non-one int
@@ -143,21 +164,18 @@ void goto_scene(int (*scene)(char, State*), State* state) {
 	}
 }
 
-int rules_scene(char input, State* state) {
+bool rules_scene(char input, State* state) {
   if (input == '\0') {
     display_rules();
     printf("\nPress any key to go back.\n");
   } else {
-    return 0;
+    return false;
   }
 
   // Returning 1 tells the scene manager to wait until the user navigates away
-  return 1;
+  return true;
 }
 
-const char *suit[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
-const char *face[13] = {"Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
-
-int game_scene(char input, State* state) {
-  return 1;
+bool game_scene(char input, State* state) {
+  return true;
 }
