@@ -17,91 +17,55 @@
 #include <stdio.h> // Include our standard functions for interacting with the IO stream
 #include <stdlib.h> // Gives us access to system function
 #include <time.h> // This gives access to time func used in srand
-#include <ctype.h>
-#include <conio.h>
+#include <stdbool.h> // I'm tired of working with 1's and 0's
 
-// The Carrier has 5 cells, Battleship has 4 cells, Cruiser has 3 cells, Submarine has 3 cells, and the Destroyer has 2 cells.
-enum Ships {
-  NoShip = 0,
-  Destroyer = 1,
-  Submarine = 2,
-  Cruiser = 3,
-  Battleship = 4,
-  Carrier = 5,
-};
+// I dev on a Mac, graders use Windows
+#if defined(_WIN64) || defined(_WIN32)
+  #include <conio.h>
+#endif
 
-// If this was C++, I think I would use polymorphism to extend a base ship class
-// and then make all the different ship types.
+// I know the boilerplate code was using these arrays, but I like enums better
 
-typedef struct {
-  char display;
-  int length;
-  enum Ships type;
-  int x_lower;
-  int y_lower;
-  int x_upper;
-  int y_upper;
-} Ship;
+// const char *suit[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
+typedef enum {
+  SUIT_HEARTS = 0,
+  SUIT_DIAMONDS = 1,
+  SUIT_CLUBS = 2,
+  SUIT_SPADES = 3,
+} Suits;
+
+// const char *face[13] = {"Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
+// typedef enum {
+// } Faces;
 
 typedef struct {
-  Ship* who_is[10][10];
-  char display[10][10];
-  int misses[10][10];
-  int hits[10][10];
-} Board;
-
-typedef struct {
-  int x;
-  int y;
-} Coord;
-
-typedef struct {
-  int total_hits;
-  int total_misses;
-  int total_shots;
-  double hits_to_misses;
-  int is_winner;
-} Stats;
-
-typedef struct {
-  Board* p1_board;
-  Board* p2_board;
-  Ship* p1_fleet;
-  Ship* p2_fleet;
-  Stats* p1_stats;
-  Stats* p2_stats;
-  int is_setup;
-  int rounds;
-  int curr_place;
-  Coord* cursor;
 } State;
 
 // I want to support a bunch of different colors,
 // and I found out that C supports enums so ima
 // try them out.
 typedef enum {
-  RED = 31,
-  GREEN = 32,
-  YELLOW = 33,
-  BLUE = 34,
-  MAGENTA = 35,
-  CYAN = 36,
-  GRAY = 37,
-  ALT_GRAY = 90,
-  ALT_RED = 91,
-  ALT_GREEN = 92,
-  ALT_YELLOW = 93,
-  ALT_BLUE = 94,
-  ALT_MAGENTA = 95,
-  ALT_CYAN = 96,
-  WHITE = 97,
+  COLOR_RED = 31,
+  COLOR_GREEN = 32,
+  COLOR_YELLOW = 33,
+  COLOR_BLUE = 34,
+  COLOR_MAGENTA = 35,
+  COLOR_CYAN = 36,
+  COLOR_GRAY = 37,
+  COLOR_ALT_GRAY = 90,
+  COLOR_ALT_RED = 91,
+  COLOR_ALT_GREEN = 92,
+  COLOR_ALT_YELLOW = 93,
+  COLOR_ALT_BLUE = 94,
+  COLOR_ALT_MAGENTA = 95,
+  COLOR_ALT_CYAN = 96,
+  COLOR_WHITE = 97,
 } Colors;
 
 // -- Helper functions --
 void clear_terminal();
 int get_menu_key();
 char wait_for_input();
-int sum_array(int nums[], int length);
 int is_zero_default(int val_one, int val_two);
 void color(Colors color);
 void reset();
@@ -112,7 +76,7 @@ void display_main_menu();
 void display_rules();
 
 // -- The components that make up scenes --
-int roll_die(void);
+// int roll_die(void);
 
 // -- The games main scenes --
 void goto_scene(int (*scene)(char, State*), State* state);
@@ -120,8 +84,8 @@ int rules_scene(char input, State* state);
 int game_scene(char input, State* state);
 
 // -- Game Stuff
-void init_fleet(Ship fleet[]);
-void init_board(Board *board);
+// void init_fleet(Ship fleet[]);
+// void init_board(Board *board);
 // void display_board(Board *board);
 
 #endif

@@ -8,41 +8,33 @@
 
 #include "game.h"
 
+/*
+	const char *suit[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
+
+	const char *face[13] = {"Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight",
+		"Nine", "Ten", "Jack", "Queen", "King"};
+
+	int deck[4][13] = {0};
+
+	srand ((unsigned) time (NULL));
+
+	shuffle (deck);
+	deal (deck, face, suit);
+
+	return 0;
+*/
+
 int main() {
 	srand(time(NULL));
-	// system("/bin/stty cooked");
+
+	#if defined(__APPLE__)
+    system("/bin/stty cooked");
+  #endif
 	
 	int continue_game = 1;
 	int current_menu = -1;
 
-	Board p1_board;
-	Board p2_board;
-
-	init_board(&p1_board);
-	init_board(&p2_board);
-
-	Ship p1_fleet[5];
-	Ship p2_fleet[5];
-
-	init_fleet(p1_fleet);
-	init_fleet(p2_fleet);
-
-	Stats p1_stats = { 0 };
-	Stats p2_stats = { 0 };
-
-	Coord cursor = { -1, -1 };
-
 	State state = {
-		&p1_board,
-		&p2_board,
-		p1_fleet,
-		p2_fleet,
-		&p1_stats,
-		&p2_stats,
-		0, // is_setup
-		0, // rounds
-		0, // curr_place
-		&cursor,
 	};
 
 	// Now wait for user's input
