@@ -54,7 +54,7 @@ void color(Colors color) {
   // I want to print in color, so I found this StackOverflow that lists
   // the ANSI codes to change the print color!
   // https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
-  printf("\033[0;%dm", color);
+  printf("\x1b[%dm", color);
 }
 
 void reset() {
@@ -232,11 +232,11 @@ Rank has_straight_flush(Hand* hand) {
   return RANK_HIGH_CARD;
 }
 
-int find_high_card(Hand* hand) {
-  int max = hand->cards[0].face;
-  for (int i = 0; i < 5; i++) {
-    int eval = hand->cards[i].face;
-    if (eval > max) {
+Card* find_high_card(Hand* hand) {
+  Card* max = &hand->cards[0];
+  for (int i = 1; i < 5; i++) {
+    Card* eval = &hand->cards[i];
+    if (eval->face > max->face) {
       max = eval;
     }
   }
@@ -279,6 +279,9 @@ void replace_card(Card deck[52], Hand* hand, int to_replace) {
     if (card->used != true) {
       hand->cards[to_replace] = *card;
       hand->replaced += 1;
+      card->used = true;
+      update_hand(hand);
+      break;
     }
   }
 }
@@ -297,16 +300,16 @@ void deal_hand(Card deck[52], Hand* hand) {
           Debug
         */
 
-        Card zero = { 0, 7, false };
-        hand->cards[0] = zero;
-        Card one = { 0, 6, false };
-        hand->cards[1] = one;
-        Card two = { 0, 5, false };
-        hand->cards[2] = two;
-        Card three = { 2, 4, false };
-        hand->cards[3] = three;
-        Card four = { 0, 3, false };
-        hand->cards[4] = four;
+        // Card zero = { 0, 7, false };
+        // hand->cards[0] = zero;
+        // Card one = { 0, 6, false };
+        // hand->cards[1] = one;
+        // Card two = { 0, 5, false };
+        // hand->cards[2] = two;
+        // Card three = { 2, 4, false };
+        // hand->cards[3] = three;
+        // Card four = { 0, 3, false };
+        // hand->cards[4] = four;
 
         update_hand(hand);
         hand->replaced = 0;
@@ -317,9 +320,49 @@ void deal_hand(Card deck[52], Hand* hand) {
 }
 
 // Names
-const char *suit_name[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
-const char *face_name[13] = {"Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
-const char *rank_name[9] = {"High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"};
+const char *suit_emojis[4] = {"♥️", "♦️", "♣️", "♠️"};
+const char *face_names[13] = {"A ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ", "8 ", "9 ", "10 ", "J ", "Q ", "K "};
+const char *rank_names[9] = {"High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"};
+
+// Displays
+void display_cards(Hand* hand, bool index) {
+  for (int i = 0; i < 5; i++) {
+    Card card = hand->cards[i];
+    const char* face_name = face_names[card.face];
+    const char* suit_name = suit_emojis[card.suit];
+    color(COLOR_BG_WHITE); printf(" ");
+    if (index) {
+      color(COLOR_ALT_BLUE);
+      printf("%d. ", i + 1);
+    }
+    color(COLOR_BLACK);
+    printf("%s%s  \n\n", face_name, suit_name);
+    reset();
+  }
+}
+
+void display_rank(Hand* hand) {
+  printf("Your highest play is a ");
+  color(COLOR_GREEN);
+  printf("%s\n", rank_names[hand->rank]);
+  reset();
+  
+  if (hand->rank == RANK_HIGH_CARD) {
+    printf("The high card is ");
+    color(COLOR_BG_BLACK);
+    const char* face_name = face_names[hand->max->face];
+    const char* suit_name = suit_emojis[hand->max->suit];
+    color(COLOR_WHITE);
+    printf(" %s%s  \n", face_name, suit_name);
+    reset();
+  }
+}
+
+void display_hand(Hand* hand, bool index) {
+  printf("Your hand is:\n\n");
+  display_cards(hand, index);
+  display_rank(hand);
+}
 
 // This method allows us to dynamically start
 // any game scene and enable user navigation
@@ -352,17 +395,76 @@ bool rules_scene(char input, State* state) {
 }
 
 bool deal_scene(char input, State* state) {
+	init_deck(state->deck);
+	shuffle(state->deck);
+  deal_hand(state->deck, state->p1_hand);
+  deal_hand(state->deck, state->p2_hand);
+  return false;
+}
+
+bool replace_scene(char input, State* state) {
+  int index_num = atoi(&input) - 1;
+  switch (input) {
+    case '\r':
+      return false;
+    default:
+      if (state->p1_hand->replaced < 3) {
+        if (index_num > -1 && index_num < 5) {
+          replace_card(state->deck, state->p1_hand, index_num);
+        }
+      }
+      break;
+  }
+
+  printf("Enter the index number of card to replace or hit Enter when finished.\n\n");
+  display_cards(state->p1_hand, true);
+  printf("You've replaced %d of 3 cards.\n", state->p1_hand->replaced);
+
+  return true;
+}
+
+bool showdown_scene(char input, State* state) {
 
   return false;
 }
 
 bool game_scene(char input, State* state) {
   switch (input) {
-    // case 'd': 
+    case 'd':
+      goto_scene(deal_scene, state);
+      state->stage = STAGE_REPLACE;
+      break;
+    case 'r':
+      goto_scene(replace_scene, state);
+      state->stage = STAGE_SHOWDOWN;
+      break;
+    case '\r':
+      switch (state->stage) {
+        case STAGE_REPLACE:
+          state->stage = STAGE_SHOWDOWN; break;
+        case STAGE_SHOWDOWN:
+          goto_scene(showdown_scene, state); break;
+        case STAGE_COMPLETE:
+          return false;
+      }
+      break;
   }
 
-  printf("5-Draw Poker\n");
-  printf("Press D to have your cards delt\n");
+  clear_terminal();
+
+  switch (state->stage) {
+    case STAGE_DEAL:
+      printf("Press D to have your cards delt\n");
+      break;
+    case STAGE_REPLACE:
+      display_hand(state->p1_hand, false);
+      printf("\nPress R to replace any cards or Enter to continue\n");
+      break;
+    case STAGE_SHOWDOWN:
+      display_hand(state->p1_hand, false);
+      printf("\nReady to showdown? Press enter to continue\n");
+      break;
+  }
 
   return true;
 }

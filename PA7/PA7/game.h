@@ -23,6 +23,7 @@
 #include <stdlib.h> // Gives us access to system function
 #include <time.h> // This gives access to time func used in srand
 #include <stdbool.h> // I prefer bools over ints
+#include <string.h> // atoi
 
 typedef enum {
   SUIT_HEARTS = 0,
@@ -67,21 +68,30 @@ typedef enum {
 
 typedef struct {
   Card cards[5];
-  int max;
+  Card* max;
   Rank rank;
   int replaced;
 } Hand;
+
+typedef enum {
+  STAGE_DEAL = 0,
+  STAGE_REPLACE = 1,
+  STAGE_SHOWDOWN = 2,
+  STAGE_COMPLETE = 3,
+} Stage;
 
 typedef struct {
   Card* deck;
   Hand* p1_hand;
   Hand* p2_hand;
+  Stage stage;
 } State;
 
 // I want to support a bunch of different colors,
 // and I found out that C supports enums so ima
 // try them out.
 typedef enum {
+  COLOR_BLACK = 30,
   COLOR_RED = 31,
   COLOR_GREEN = 32,
   COLOR_YELLOW = 33,
@@ -89,6 +99,7 @@ typedef enum {
   COLOR_MAGENTA = 35,
   COLOR_CYAN = 36,
   COLOR_GRAY = 37,
+  COLOR_CRIMSON = 38,
   COLOR_ALT_GRAY = 90,
   COLOR_ALT_RED = 91,
   COLOR_ALT_GREEN = 92,
@@ -97,6 +108,15 @@ typedef enum {
   COLOR_ALT_MAGENTA = 95,
   COLOR_ALT_CYAN = 96,
   COLOR_WHITE = 97,
+  COLOR_BG_BLACK = 40,
+  COLOR_BG_RED = 41,
+  COLOR_BG_GREEN = 42,
+  COLOR_BG_YELLOW = 43,
+  COLOR_BG_BLUE = 44,
+  COLOR_BG_MAGENTA = 45,
+  COLOR_BG_CYAN = 46,
+  COLOR_BG_WHITE = 47,
+  COLOR_BG_CRIMSON = 48,
 } Colors;
 
 // -- Helper functions --
