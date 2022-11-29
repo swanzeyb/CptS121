@@ -8,27 +8,6 @@
 
 #include "game.h"
 
-void shuffle (int wDeck[][13]) {
-	int row = 0;    /* row number */
-	int column = 0; /*column number */
-	int card = 0;   /* card counter */
-
-	/* for each of the 52 cards, choose slot of deck randomly */
-	for (card = 1; card <= 52; card++)
-	{
-		/* choose new random location until unoccupied slot found */
-		do
-		{
-			row = rand () % 4;
-			column = rand () % 13;
-		} while (wDeck[row][column] != 0);
-
-		/* place card number in chosen slot of deck */
-		wDeck[row][column] = card;
-	}
-}
-
-/* deal cards in deck */
 void deal (const int wDeck[][13], const char *wFace[], const char *wSuit[]) {
 	int row = 0;    /* row number */
 	int column = 0; /*column number */
@@ -135,20 +114,185 @@ void wait_for_continue() {
   wait_for_input();
 }
 
+// Structures
+void init_deck(Card deck[52]) {
+  for (int s = 0; s < 4; s++) {
+    for (int c = 0; c < 13; c++) {
+      int i = (s * 13) + c + 1; // Current position in deck
+      Card card = {
+        s, // Suit
+        c, // Card Value
+        false, // Has been used
+      };
+      deck[i] = card;
+    }
+  }
+}
+
 // Game Logic
-bool straight_flush() {}
-bool four_kind() {}
-bool full_house() {}
-bool flush() {}
-bool straight() {}
-bool three_kind() {}
-bool two_pair() {}
-bool pair() {}
-bool high_card() {}
+bool has_same_count(Hand* hand, int amount) {
+  for (int i = 0; i < 5; i++) {
+    int curr_face = hand->cards[i].face;
+    int like_count = 0;
+    for (int j = 0; j < 5; j++) {
+      int eval_face = hand->cards[i].face;
+      if ((i != j) && (curr_face == eval_face)) {
+        like_count += 1;
+      }
+    }
+    if (like_count == amount) {
+      return true;
+    }
+  }
+  return false;
+}
+
+Rank has_pair(Hand* hand) {
+  if (has_same_count(hand, 2)) {
+    return RANK_PAIR;
+  } else {
+    return RANK_HIGH_CARD;
+  }
+}
+
+Rank has_three_kind(Hand* hand) {
+  if (has_same_count(hand, 3)) {
+    return RANK_THREE_KIND;
+  } else {
+    return RANK_HIGH_CARD;
+  }
+}
+
+Rank has_four_kind(Hand* hand) {
+  if (has_same_count(hand, 4)) {
+    return RANK_FOUR_KIND;
+  } else {
+    return RANK_HIGH_CARD;
+  }
+}
+
+Rank has_two_pair(Hand* hand) {
+  int pair_count = 0;
+  for (int i = 0; i < 5; i++) {
+    int curr_face = hand->cards[i].face;
+    int like_count = 0;
+    for (int j = 0; j < 5; j++) {
+      int eval_face = hand->cards[i].face;
+      if ((i != j) && (curr_face == eval_face)) {
+        like_count += 1;
+      }
+    }
+    if (like_count == 1) {
+      pair_count += 1;
+    }
+    if (pair_count == 2) {
+      return RANK_TWO_PAIR;
+    }
+  }
+  return RANK_HIGH_CARD;
+}
+
+Rank has_full_house(Hand* hand) {
+  if (has_same_count(hand, 2) && has_same_count(hand, 3)) {
+    return RANK_FULL_HOUSE;
+  } else {
+    return RANK_HIGH_CARD;
+  }
+}
+
+Rank has_flush(Hand* hand) {
+  for (int i = 1; i < 5; i++) {
+    int last = hand->cards[i - 1].suit;
+    int next = hand->cards[i].suit;
+    if (last != next) {
+      return RANK_HIGH_CARD;
+    }
+  }
+  return RANK_FLUSH;
+}
+
+Rank has_straight(Hand* hand) {
+  int last = hand->cards[0].face;;
+  for (int f = 0; f < 5; f++) {
+    int next = hand->cards[f].face;
+    if ((next - last) > 1) {
+      return RANK_HIGH_CARD;
+    }
+    last = next;
+  }
+  last = hand->cards[4].face;;
+  for (int r = 5; r > 0; r--) {
+    int next = hand->cards[r].face;
+    if ((last - next) > 1) {
+      return RANK_HIGH_CARD;
+    }
+    last = next;
+  }
+  return RANK_STRAIGHT;
+}
+
+Rank has_straight_flush(Hand* hand) {
+  if (has_straight(hand) != RANK_HIGH_CARD) {
+    if (has_flush(hand) != RANK_HIGH_CARD) {
+      return RANK_STRAIGHT_FLUSH;
+    }
+  }
+  return RANK_HIGH_CARD;
+}
+
+int find_high_card(Hand* hand) {
+  int max = hand->cards[0].face;
+  for (int i = 0; i < 5; i++) {
+    int eval = hand->cards[i].face;
+    if (eval > max) {
+      max = eval;
+    }
+  }
+  return max;
+}
+
+// Game Functions
+void shuffle(Card deck[52]) {
+  for (int from = 0; from < 52; from++) {
+    int to = rand_num(51); // Find a random place to swap cards
+    Card from_card = deck[from];
+    Card to_card = deck[to];
+    deck[from] = to_card;
+    deck[to] = from_card;
+  }
+}
+
+Rank find_rank(Hand* hand) {
+  int ranks[9] = {
+
+  };
+  return arr_max(ranks, 9);
+}
+
+void deal_hand(Card deck[52], Hand* hand) {
+  int delt = 0;
+  for (int c = 0; c < 53; c++) {
+    Card* card = &deck[c];
+    if (card->used != true) {
+      if (delt < 5) {
+        hand->cards[delt] = *card;
+        card->used = true;
+        delt += 1;
+      } else {
+        break;
+      }
+    }
+  }
+}
+
+// Names
+const char *suit_name[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
+const char *face_name[13] = {"Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
+const char *rank_name[9] = {"High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"};
 
 // This method allows us to dynamically start
 // any game scene and enable user navigation
-void goto_scene(int (*scene)(char, State*), State* state) {
+void goto_scene(bool (*scene)(char, State*), State* state) {
   int continue_scene = true;
   int current_input = '\0';
 

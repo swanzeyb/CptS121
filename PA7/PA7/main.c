@@ -8,22 +8,6 @@
 
 #include "game.h"
 
-/*
-	const char *suit[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
-
-	const char *face[13] = {"Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight",
-		"Nine", "Ten", "Jack", "Queen", "King"};
-
-	int deck[4][13] = {0};
-
-	srand ((unsigned) time (NULL));
-
-	shuffle (deck);
-	deal (deck, face, suit);
-
-	return 0;
-*/
-
 int main() {
 	srand(time(NULL));
 
@@ -34,27 +18,36 @@ int main() {
 	int continue_game = 1;
 	int current_menu = -1;
 
-	State state = {
-	};
+	Card deck[52];
+	init_deck(deck);
+	shuffle(deck);
+
+	Hand p1_hand;
+	Hand p2_hand;
+
+	deal_hand(deck, &p1_hand);
+	deal_hand(deck, &p2_hand);
+
+	State state;
 
 	// Now wait for user's input
-	while (continue_game == 1) {
-		clear_terminal();
-		display_main_menu();
-		current_menu = get_menu_key();
+	// while (continue_game == 1) {
+	// 	clear_terminal();
+	// 	display_main_menu();
+	// 	current_menu = get_menu_key();
 
-		switch(current_menu) {
-			case 1:
-				goto_scene(game_scene, &state);
-				break;
-			case 2:
-				goto_scene(rules_scene, &state);
-				break;
-			case 3:
-				continue_game = 0;
-				break;
-		}
-	}
+	// 	switch(current_menu) {
+	// 		case 1:
+	// 			goto_scene(game_scene, &state);
+	// 			break;
+	// 		case 2:
+	// 			goto_scene(rules_scene, &state);
+	// 			break;
+	// 		case 3:
+	// 			continue_game = 0;
+	// 			break;
+	// 	}
+	// }
 
 	// Tell the system the program executed successfully
 	return 0;

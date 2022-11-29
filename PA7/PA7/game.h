@@ -6,6 +6,11 @@
 * Description: This module describes the games logic and rules.
 *******************************************************************************************/
 
+// I dev on a Mac, graders use Windows
+#if defined(_WIN64) || defined(_WIN32)
+  #include <conio.h>
+#endif
+
 // Header guard to ensure that our code is only included once by the compiler
 #ifndef GAME_H
 
@@ -19,12 +24,6 @@
 #include <time.h> // This gives access to time func used in srand
 #include <stdbool.h> // I prefer bools over ints
 
-// I dev on a Mac, graders use Windows
-#if defined(_WIN64) || defined(_WIN32)
-  #include <conio.h>
-#endif
-
-const char *suit_name[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
 typedef enum {
   SUIT_HEARTS = 0,
   SUIT_DIAMONDS = 1,
@@ -32,7 +31,6 @@ typedef enum {
   SUIT_SPADES = 3,
 } Suits;
 
-const char *face_name[13] = {"Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
 typedef enum {
   FACE_ACE = 0,
   FACE_DEUCE = 1,
@@ -55,10 +53,9 @@ typedef struct {
   bool used;
 } Card;
 
-const char *rank_name[9] = {"High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"};
 typedef enum {
   RANK_STRAIGHT_FLUSH = 8,
-  RANK_FOUR_OF_A_KIND = 7,
+  RANK_FOUR_KIND = 7,
   RANK_FULL_HOUSE = 6,
   RANK_FLUSH = 5,
   RANK_STRAIGHT = 4,
@@ -75,9 +72,9 @@ typedef struct {
 } Hand;
 
 typedef struct {
-  Card deck[52];
-  Hand p1_hand;
-  Hand p2_hand;
+  Card* deck[52];
+  Hand* p1_hand;
+  Hand* p2_hand;
 } State;
 
 // I want to support a bunch of different colors,
@@ -119,13 +116,13 @@ void display_rules();
 // int roll_die(void);
 
 // -- The games main scenes --
-void goto_scene(int (*scene)(char, State*), State* state);
+void goto_scene(bool (*scene)(char, State*), State* state);
 bool rules_scene(char input, State* state);
 bool game_scene(char input, State* state);
 
 // -- Game Stuff
-// void init_fleet(Ship fleet[]);
-// void init_board(Board *board);
-// void display_board(Board *board);
+void init_deck(Card deck[52]);
+void shuffle(Card deck[52]);
+void deal_hand(Card deck[52], Hand* hand);
 
 #endif
