@@ -28,7 +28,11 @@ int main() {
 	deal_hand(deck, &p1_hand);
 	deal_hand(deck, &p2_hand);
 
-	State state;
+	State state = {
+		deck,
+		&p1_hand,
+		&p2_hand,
+	};
 
 	// Now wait for user's input
 	// while (continue_game == 1) {

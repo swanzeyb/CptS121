@@ -88,7 +88,7 @@ void display_main_menu() {
 void display_rules() {
   /*
     The following rules were directly taken from an online source.
-    https://www.cs.nmsu.edu/~bdu/TA/487/brules.htm
+    https://www.contrib.andrew.cmu.edu/~gc00/reviews/pokerrules#:~:text=Five%20card%20draw%20is%20one,cards%20as%20he%2Fshe%20discarded.
   */
   // See citation above.
 }
@@ -133,9 +133,9 @@ void init_deck(Card deck[52]) {
 bool has_same_count(Hand* hand, int amount) {
   for (int i = 0; i < 5; i++) {
     int curr_face = hand->cards[i].face;
-    int like_count = 0;
+    int like_count = 1;
     for (int j = 0; j < 5; j++) {
-      int eval_face = hand->cards[i].face;
+      int eval_face = hand->cards[j].face;
       if ((i != j) && (curr_face == eval_face)) {
         like_count += 1;
       }
@@ -215,15 +215,7 @@ Rank has_straight(Hand* hand) {
   int last = hand->cards[0].face;;
   for (int f = 0; f < 5; f++) {
     int next = hand->cards[f].face;
-    if ((next - last) > 1) {
-      return RANK_HIGH_CARD;
-    }
-    last = next;
-  }
-  last = hand->cards[4].face;;
-  for (int r = 5; r > 0; r--) {
-    int next = hand->cards[r].face;
-    if ((last - next) > 1) {
+    if (abs(next - last) > 1) {
       return RANK_HIGH_CARD;
     }
     last = next;
@@ -264,9 +256,31 @@ void shuffle(Card deck[52]) {
 
 Rank find_rank(Hand* hand) {
   int ranks[9] = {
-
+    has_straight_flush(hand),
+    has_four_kind(hand),
+    has_full_house(hand),
+    has_flush(hand),
+    has_straight(hand),
+    has_three_kind(hand),
+    has_two_pair(hand),
+    has_pair(hand),
   };
   return arr_max(ranks, 9);
+}
+
+void update_hand(Hand* hand) {
+  hand->max = find_high_card(hand);
+  hand->rank = find_rank(hand);
+}
+
+void replace_card(Card deck[52], Hand* hand, int to_replace) {
+  for (int c = 0; c < 53; c++) {
+    Card* card = &deck[c];
+    if (card->used != true) {
+      hand->cards[to_replace] = *card;
+      hand->replaced += 1;
+    }
+  }
 }
 
 void deal_hand(Card deck[52], Hand* hand) {
@@ -279,6 +293,23 @@ void deal_hand(Card deck[52], Hand* hand) {
         card->used = true;
         delt += 1;
       } else {
+        /*
+          Debug
+        */
+
+        Card zero = { 0, 7, false };
+        hand->cards[0] = zero;
+        Card one = { 0, 6, false };
+        hand->cards[1] = one;
+        Card two = { 0, 5, false };
+        hand->cards[2] = two;
+        Card three = { 2, 4, false };
+        hand->cards[3] = three;
+        Card four = { 0, 3, false };
+        hand->cards[4] = four;
+
+        update_hand(hand);
+        hand->replaced = 0;
         break;
       }
     }
@@ -320,6 +351,18 @@ bool rules_scene(char input, State* state) {
   return true;
 }
 
+bool deal_scene(char input, State* state) {
+
+  return false;
+}
+
 bool game_scene(char input, State* state) {
+  switch (input) {
+    // case 'd': 
+  }
+
+  printf("5-Draw Poker\n");
+  printf("Press D to have your cards delt\n");
+
   return true;
 }

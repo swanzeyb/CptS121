@@ -67,12 +67,13 @@ typedef enum {
 
 typedef struct {
   Card cards[5];
-  Card* max;
+  int max;
   Rank rank;
+  int replaced;
 } Hand;
 
 typedef struct {
-  Card* deck[52];
+  Card* deck;
   Hand* p1_hand;
   Hand* p2_hand;
 } State;
