@@ -94,6 +94,10 @@ void display_rules() {
     The following rules were directly taken from an online source.
     https://www.contrib.andrew.cmu.edu/~gc00/reviews/pokerrules#:~:text=Five%20card%20draw%20is%20one,cards%20as%20he%2Fshe%20discarded.
   */
+  printf("Poker is played from a standard pack of 52 cards.\n");
+  printf("The cards are ranked (from high to low) Ace, King, Queen, Jack, 10, 9, 8, 7, 6, 5, 4, 3, 2, Ace. \n");
+  printf("There are four suits (spades, hearts, diamonds and clubs); however, no suit is higher than another.\n");
+  printf("All poker hands contain five cards, the highest hand wins.\n");
   // See citation above.
 }
 
