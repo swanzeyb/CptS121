@@ -336,15 +336,13 @@ const char *rank_names[9] = {"High Card", "Pair", "Two Pair", "Three of a Kind",
 void display_cards(Hand* hand, bool index) {
   for (int i = 0; i < 5; i++) {
     Card card = hand->cards[i];
-    const char* face_name = face_names[card.face];
-    const char* suit_name = suit_emojis[card.suit];
     color(COLOR_BG_WHITE); printf(" ");
     if (index) {
       color(COLOR_ALT_BLUE);
       printf("%d. ", i + 1);
     }
     color(COLOR_BLACK);
-    printf("%s%s  ", face_name, suit_name);
+    printf("%s%s  ", face_names[card.face], suit_emojis[card.suit]);
     reset();
     printf("\n\n");
   }
