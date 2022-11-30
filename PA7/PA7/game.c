@@ -304,21 +304,6 @@ void deal_hand(Card deck[52], Hand* hand) {
         card->used = true;
         delt += 1;
       } else {
-        /*
-          Debug
-        */
-
-        // Card zero = { 0, 7, false };
-        // hand->cards[0] = zero;
-        // Card one = { 0, 6, false };
-        // hand->cards[1] = one;
-        // Card two = { 0, 5, false };
-        // hand->cards[2] = two;
-        // Card three = { 2, 4, false };
-        // hand->cards[3] = three;
-        // Card four = { 0, 3, false };
-        // hand->cards[4] = four;
-
         update_hand(hand);
         hand->replaced = 0;
         break;
@@ -328,11 +313,11 @@ void deal_hand(Card deck[52], Hand* hand) {
 }
 
 // Names
-  #if defined(_WIN64) || defined(_WIN32)
-    const char *suit_emojis[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
-  #elif defined(__APPLE__)
-    const char *suit_emojis[4] = {"♥️", "♦️", "♣️", "♠️"};
-  #endif
+#if defined(_WIN64) || defined(_WIN32)
+  const char *suit_emojis[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
+#elif defined(__APPLE__)
+  const char *suit_emojis[4] = {"♥️", "♦️", "♣️", "♠️"};
+#endif
 const char *face_names[13] = {"A ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ", "8 ", "9 ", "10 ", "J ", "Q ", "K "};
 const char *rank_names[9] = {"High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"};
 
