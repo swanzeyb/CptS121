@@ -46,7 +46,11 @@ void clear_terminal() {
 
 int get_menu_key() {
 	int key = 0;
-	scanf(" %d", &key);
+  #if defined(_WIN64) || defined(_WIN32)
+    scanf_s(" %d", &key);
+  #elif defined(__APPLE__)
+    scanf(" %d", &key);
+  #endif
 	return key;
 }
 
@@ -320,7 +324,11 @@ void deal_hand(Card deck[52], Hand* hand) {
 }
 
 // Names
-const char *suit_emojis[4] = {"♥️", "♦️", "♣️", "♠️"};
+  #if defined(_WIN64) || defined(_WIN32)
+    const char *suit_emojis[4] = {"Hearts", "Diamonds", "Clubs", "Spades"};
+  #elif defined(__APPLE__)
+    const char *suit_emojis[4] = {"♥️", "♦️", "♣️", "♠️"};
+  #endif
 const char *face_names[13] = {"A ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ", "8 ", "9 ", "10 ", "J ", "Q ", "K "};
 const char *rank_names[9] = {"High Card", "Pair", "Two Pair", "Three of a Kind", "Straight", "Flush", "Full House", "Four of a Kind", "Straight Flush"};
 
