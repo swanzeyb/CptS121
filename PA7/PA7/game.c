@@ -236,7 +236,7 @@ Card* find_high_card(Hand* hand) {
   Card* max = &hand->cards[0];
   for (int i = 1; i < 5; i++) {
     Card* eval = &hand->cards[i];
-    if (eval->face > max->face) {
+    if ((eval->face > max->face) && (eval->used == false)) {
       max = eval;
     }
   }
@@ -336,13 +336,18 @@ void display_cards(Hand* hand, bool index) {
       printf("%d. ", i + 1);
     }
     color(COLOR_BLACK);
-    printf("%s%s  \n\n", face_name, suit_name);
+    printf("%s%s  ", face_name, suit_name);
     reset();
+    printf("\n\n");
   }
 }
 
-void display_rank(Hand* hand) {
-  printf("Your highest play is a ");
+void display_rank(Hand* hand, bool is_p1) {
+  if (is_p1) {
+    printf("Your highest play is a ");
+  } else {
+    printf("Their highest play is a ");
+  }
   color(COLOR_GREEN);
   printf("%s\n", rank_names[hand->rank]);
   reset();
@@ -353,15 +358,16 @@ void display_rank(Hand* hand) {
     const char* face_name = face_names[hand->max->face];
     const char* suit_name = suit_emojis[hand->max->suit];
     color(COLOR_WHITE);
-    printf(" %s%s  \n", face_name, suit_name);
+    printf(" %s%s  ", face_name, suit_name);
     reset();
+    printf("\n");
   }
 }
 
 void display_hand(Hand* hand, bool index) {
   printf("Your hand is:\n\n");
   display_cards(hand, index);
-  display_rank(hand);
+  display_rank(hand, true);
 }
 
 // This method allows us to dynamically start
@@ -424,7 +430,48 @@ bool replace_scene(char input, State* state) {
 }
 
 bool showdown_scene(char input, State* state) {
+  display_hand(state->p1_hand, false);
+  printf("\nDealer's hand is:\n\n");
+  display_cards(state->p2_hand, false);
+  display_rank(state->p2_hand, false);
+  printf("\n");
 
+  Rank p1_rank = state->p1_hand->rank;
+  Rank p2_rank = state->p2_hand->rank;
+  Card* p1_max = state->p1_hand->max;
+  Card* p2_max = state->p2_hand->max;
+
+  color(COLOR_BG_MAGENTA);
+  if (p1_rank > p2_rank) {
+    printf("Your %s beat the dealers %s!", rank_names[p1_rank], rank_names[p2_rank]);
+  } else if (p2_rank > p1_rank) {
+    printf("The dealer's %s beat your %s!", rank_names[p2_rank], rank_names[p1_rank]);
+  } else if (p1_rank == p2_rank) {
+    // Compare max card because same rank
+    bool has_winner = true;
+    do {
+      const char* p_f = face_names[p1_max->face];
+      const char* p_s = suit_emojis[p1_max->suit];
+      const char* d_f = face_names[p2_max->face];
+      const char* d_s = suit_emojis[p2_max->suit];
+      if (p1_max->face > p2_max->face) {
+        printf("Your high card %s%s  beat the dealers %s%s !", p_f, p_s, d_f, d_s);
+      } else if (p2_max->face > p1_max->face) {
+        printf("The dealer's high card %s%s  beat your %s%s !", d_f, d_s, p_f, p_s);
+      } else {
+        // Tie again o_o
+        p1_max->used = true;
+        p1_max = find_high_card(state->p1_hand);
+        p2_max->used = true;
+        p2_max = find_high_card(state->p2_hand);
+        has_winner = false;
+      }
+    } while (has_winner == false);
+  }
+  reset(); printf("\n");
+
+  state->stage = STAGE_DEAL;
+  printf("Press enter to start a new round.\n");
   return false;
 }
 
@@ -443,7 +490,8 @@ bool game_scene(char input, State* state) {
         case STAGE_REPLACE:
           state->stage = STAGE_SHOWDOWN; break;
         case STAGE_SHOWDOWN:
-          goto_scene(showdown_scene, state); break;
+          goto_scene(showdown_scene, state);
+          return true;
         case STAGE_COMPLETE:
           return false;
       }
