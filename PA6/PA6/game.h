@@ -6,6 +6,10 @@
 * Description: This module describes the games logic and rules.
 *******************************************************************************************/
 
+#if defined(_WIN64) || defined(_WIN32)
+  #include <conio.h>
+#endif
+
 // Header guard to ensure that our code is only included once by the compiler
 #ifndef GAME_H
 
@@ -18,7 +22,6 @@
 #include <stdlib.h> // Gives us access to system function
 #include <time.h> // This gives access to time func used in srand
 #include <ctype.h>
-#include <conio.h>
 
 // The Carrier has 5 cells, Battleship has 4 cells, Cruiser has 3 cells, Submarine has 3 cells, and the Destroyer has 2 cells.
 enum Ships {

@@ -79,10 +79,14 @@ void display_rules() {
 
 char wait_for_input() {
   while (1) {
-    // fflush(stdin);
-    // system("/bin/stty raw");
-    // char in = getchar();
-    // system("/bin/stty cooked");
+    #if defined(_WIN64) || defined(_WIN32)
+      char in = _getch();
+    #elif defined(__APPLE__)
+      fflush(stdin);
+      system("/bin/stty raw");
+      char in = getchar();
+      system("/bin/stty cooked");
+    #endif
     char in = _getch();
     if ((in != '\n') && (in != ' ')) {
       return in;

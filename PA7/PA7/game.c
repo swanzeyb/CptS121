@@ -8,30 +8,6 @@
 
 #include "game.h"
 
-void deal (const int wDeck[][13], const char *wFace[], const char *wSuit[]) {
-	int row = 0;    /* row number */
-	int column = 0; /*column number */
-	int card = 0;   /* card counter */
- 
-	/* deal each of the 52 cards */
-	for (card = 1; card <= 52; card++)
-	{
-		/* loop through rows of wDeck */
-		for (row = 0; row <= 3; row++)
-		{
-			/* loop through columns of wDeck for current row */
-			for (column = 0; column <= 12; column++)
-			{
-				/* if slot contains current card, display card */
-				if (wDeck[row][column] == card)
-				{
-					printf ("%5s of %-8s%c", wFace[column], wSuit[row], card % 2 == 0 ? '\n' : '\t');
-				}
-			}
-		}
-	}
-}
-
 void clear_terminal() {
   // According to one source, there is standard constants
   // defined by the compiler that tells us what system we

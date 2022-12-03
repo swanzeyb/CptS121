@@ -10,7 +10,10 @@
 
 int main() {
 	srand(time(NULL));
-	// system("/bin/stty cooked");
+	
+	#if defined(__APPLE__)
+    system("/bin/stty cooked");
+  #endif
 	
 	int continue_game = 1;
 	int current_menu = -1;
