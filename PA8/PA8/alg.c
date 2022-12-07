@@ -32,29 +32,33 @@ char* my_str_n_cat(char* source, char* sink, int n) {
   return start;
 }
 
-int binary_search(int nums[], int length, int target) {
-  int right = length, mid = length / 2;
-  int found = 0, index = -1, left = 0;
+binary_search_result_t binary_search(int nums[], int length, int target) {
+  int low = 0, high = length - 1;
+  int mid = (low + high) / 2;
 
-  while (found == 0 && left <= right) {
-    // Calc midpoint
-    mid = (left + right) / 2;
-
-    // Check if target is at midpoint
-    if (nums[mid] == target) {
-      found = 1;
-      index = mid;
+  while (nums[mid] != target) {
+    // If the target is greater than the mid point, focus on the higher end
+    if (target > nums[mid]) {
+      low = mid + 1;
+    } else {
+      // Else, focus on the lower end
+      high = mid - 1;
     }
 
-    // If the target is less than midpoint
-    if (target < nums[index]) {
-      right = mid - 1;
-    } else if (target > nums[index]) {
-      left = mid + 1;
+    // Reset the mid point after adjusting bounds
+    int new_mid = (low + high) / 2;
+
+    // Doesn't exist in list
+    if (new_mid == mid) {
+      break;
+    } else {
+      mid = new_mid;
     }
   }
 
-  return index;
+  bool found = nums[mid] == target;
+  binary_search_result_t result = { found ? mid : -1, found };
+  return result;
 }
 
 void bubble_sort(char** strings, int length) {

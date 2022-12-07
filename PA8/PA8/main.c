@@ -21,9 +21,14 @@ int main() {
 	// binary_search
 	int sorted_nums[] = { 5, 10, 24, 25, 32, 48, 50 };
 	printf("Result of binary_search: \n");
-	printf("Index of %d in sorted_nums is %d\n", 24, binary_search(sorted_nums, 7, 24));
-	printf("Index of %d in sorted_nums is %d\n", 50, binary_search(sorted_nums, 7, 50));
-	printf("Index of %d in sorted_nums is %d\n", 27, binary_search(sorted_nums, 7, 27));
+	binary_search_result_t r_one = binary_search(sorted_nums, 7, 24);
+	printf("Index of %d in sorted_nums is %d\n", 24, r_one.index);
+
+	binary_search_result_t r_two = binary_search(sorted_nums, 7, 50);
+	printf("Index of %d in sorted_nums is %d\n", 50, r_two.index);
+
+	binary_search_result_t r_three =binary_search(sorted_nums, 7, 27);
+	printf("Index of %d in sorted_nums is %d\n", 27, r_three.index);
 
 	// bubble_sort
 	char* alpaca = (char*)malloc(sizeof(char) * 6);

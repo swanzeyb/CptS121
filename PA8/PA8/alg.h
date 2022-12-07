@@ -23,10 +23,15 @@
 typedef struct {
   int num_occurrences;
   double frequency;
-} Occurrences;
+} Occurrences; // This is not the best naming, should use _t convention
+
+typedef struct {
+  int index;
+  bool found;
+} binary_search_result_t;
 
 char* my_str_n_cat(char* source, char* sink, int n);
-int binary_search(int nums[], int length, int target);
+binary_search_result_t binary_search(int nums[], int length, int target);
 void bubble_sort(char** strings, int length);
 int is_palindrome(char* string, int length);
 unsigned int sum_primes(unsigned int to, unsigned int sum);
