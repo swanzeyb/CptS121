@@ -34,7 +34,7 @@ char* my_str_n_cat(char* source, char* sink, int n) {
 
 int binary_search(int nums[], int length, int target) {
   int right = length, mid = length / 2;
-  int found = 0, index = 0, left = 0;
+  int found = 0, index = -1, left = 0;
 
   while (found == 0 && left <= right) {
     // Calc midpoint

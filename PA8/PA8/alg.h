@@ -26,6 +26,7 @@ typedef struct {
 } Occurrences;
 
 char* my_str_n_cat(char* source, char* sink, int n);
+int binary_search(int nums[], int length, int target);
 void bubble_sort(char** strings, int length);
 int is_palindrome(char* string, int length);
 unsigned int sum_primes(unsigned int to, unsigned int sum);
