@@ -20,5 +20,6 @@
 #include <stdbool.h> // I prefer bools over ints
 #include <string.h> // atoi
 
+char* my_str_n_cat(char* source, char* sink, int n);
 
 #endif

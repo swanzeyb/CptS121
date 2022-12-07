@@ -10,6 +10,12 @@
 
 int main() {
 
+	char source[] = "dogs.";
+	char sink[100] = "I like ";
+
+	char* result = my_str_n_cat(source, sink, 5);
+
+	printf("Result: %s\n", result);
 
 	// Tell the system the program executed successfully
 	return 0;
