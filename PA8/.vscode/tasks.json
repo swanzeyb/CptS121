@@ -10,7 +10,8 @@
         "-o",
         "${workspaceFolder}/${workspaceFolderBasename}/a.out",
         "-g",
-        "-O0"
+        "-O0",
+        "-fsanitize=address",
       ],
       "presentation": {
         "reveal": "silent",

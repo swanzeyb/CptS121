@@ -10,12 +10,30 @@
 
 int main() {
 
-	char source[] = "dogs.";
-	char sink[100] = "I like ";
+	char* alpaca = (char*)malloc(sizeof(char) * 6);
+	char* bison = (char*)malloc(sizeof(char) * 4);
+	char* cat = (char*)malloc(sizeof(char) * 3);
+	char* dog = (char*)malloc(sizeof(char) * 3);
 
-	char* result = my_str_n_cat(source, sink, 5);
+	alpaca = "Alpaca";
+	bison = "Bison";
+	cat = "Cat";
+	dog = "Dog";
 
-	printf("Result: %s\n", result);
+	char** animals = (char**)malloc(sizeof(alpaca) + sizeof(bison) + sizeof(cat) + sizeof(dog));
+
+	animals[0] = alpaca;
+	animals[3] = bison;
+	animals[1] = cat;
+	animals[2] = dog;
+
+	bubble_sort(animals, 4);
+
+	for (int i = 0; i < 4; i++) {
+		printf("Animal: %s\n", animals[i]);
+	}
+
+	// free(animals);
 
 	// Tell the system the program executed successfully
 	return 0;

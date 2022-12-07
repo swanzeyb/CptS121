@@ -21,5 +21,6 @@
 #include <string.h> // atoi
 
 char* my_str_n_cat(char* source, char* sink, int n);
+void bubble_sort(char** strings, int length);
 
 #endif

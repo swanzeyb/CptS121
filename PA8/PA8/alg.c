@@ -56,3 +56,22 @@ int binary_search(int nums[], int length, int target) {
 
   return index;
 }
+
+void bubble_sort(char** strings, int length) {
+  int u = length;
+  int c = 0;
+  while (u > 0) {
+    c = 1;
+    while (c < u) {
+      printf("Debug: %c\n", *strings[c]);
+      printf("Debug: %c\n", *strings[c - 1]);
+      if (*strings[c] < *strings[c -1]) {
+        char* tmp = strings[c];
+        strings[c] = strings[c - 1];
+        strings[c - 1] = tmp;
+      }
+      c++;
+    }
+    u--;
+  }
+}
