@@ -8,19 +8,31 @@
 
 #include "alg.h"
 
+void color(Colors color) {
+  // I want to print in color, so I found this StackOverflow that lists
+  // the ANSI codes to change the print color!
+  // https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
+  printf("\x1b[%dm", color);
+}
+
+void reset() {
+  printf("\033[0m");
+}
+
 int main() {
 
 	// my_str_n_cat
 	char source[] = "dogs.";
 	char sink[100] = "I like ";
+	char* str_cat_result = my_str_n_cat(source, sink, 5);
 
-	char* result = my_str_n_cat(source, sink, 5);
-
-	printf("Result of my_str_n_cat: %s\n", result);
+	color(COLOR_CYAN); printf("Result of my_str_n_cat: \n"); reset();
+	printf("%s\n", str_cat_result);
 
 	// binary_search
 	int sorted_nums[] = { 5, 10, 24, 25, 32, 48, 50 };
-	printf("Result of binary_search: \n");
+	color(COLOR_CYAN); printf("Result of binary_search: \n"); reset();
+
 	binary_search_result_t r_one = binary_search(sorted_nums, 7, 24);
 	printf("Index of %d in sorted_nums is %d\n", 24, r_one.index);
 
@@ -48,7 +60,7 @@ int main() {
 
 	bubble_sort(animals, 4);
 
-	printf("Result of bubble_sort: \n");
+	color(COLOR_CYAN); printf("Result of bubble_sort: \n"); reset();
 	for (int i = 0; i < 4; i++) {
 		printf("Animal: %s\n", animals[i]);
 	}
@@ -56,12 +68,13 @@ int main() {
 	// is_palindrome
 	char* pali = "race car";
 	char* not_pali = "hi mom";
-	printf("Result of is_palindrome: \n");
+	color(COLOR_CYAN); printf("Result of is_palindrome: \n"); reset();
+
 	printf("%s is a palindrome: %s\n", pali, is_palindrome(pali, 8) == 1 ? "true" : "false");
 	printf("%s is a palindrome: %s\n", not_pali, is_palindrome(not_pali, 6) == 1 ? "true" : "false");
 
 	// sum_primes
-	printf("Result of sum_primes: \n");
+	color(COLOR_CYAN); printf("Result of sum_primes: \n"); reset();
 	printf("%d is the sum of all prime numbers in %d\n", sum_primes(123, 0), 1235);
 
 	// maximum_occurences
@@ -69,10 +82,10 @@ int main() {
 	Occurrences occurrences[64] = { { 0, 0.0 } };
 	char* most_used = malloc(sizeof(char));
 	double* used_frequency = malloc(sizeof(double));
-
 	Occurrences* m_occurrences = maximum_occurences(test_occurrences, occurrences, used_frequency, most_used);
 	
-	printf("Result of maximum_occurences: Char '%c', Used %d, Frequency %.2lf", *most_used, m_occurrences->num_occurrences, m_occurrences->frequency);
+	color(COLOR_CYAN); printf("Result of maximum_occurences: \n"); reset();
+	printf("Char '%c', Used %d, Frequency %.2lf\n", *most_used, m_occurrences->num_occurrences, m_occurrences->frequency);
 
 	// Tell the system the program executed successfully
 	return 0;
