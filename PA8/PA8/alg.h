@@ -20,9 +20,15 @@
 #include <stdbool.h> // I prefer bools over ints
 #include <string.h> // atoi
 
+typedef struct {
+  int num_occurrences;
+  double frequency;
+} Occurrences;
+
 char* my_str_n_cat(char* source, char* sink, int n);
 void bubble_sort(char** strings, int length);
 int is_palindrome(char* string, int length);
 unsigned int sum_primes(unsigned int to, unsigned int sum);
+Occurrences* maximum_occurences(char* string, Occurrences occurrences[], double* frequeny, char* most_occured);
 
 #endif

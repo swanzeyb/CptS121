@@ -10,7 +10,13 @@
 
 int main() {
 
-	printf("%d is the sum of all prime numbers in %d\n", sum_primes(123, 0), 1235);
+	char* test = "onomonopia";
+
+	Occurrences occurrences[64] = { { 0, 0.0 } };
+	char* most_used = malloc(sizeof(char));
+	double* used_frequency = malloc(sizeof(double));
+
+	Occurrences* result = maximum_occurences(test, occurrences, used_frequency, most_used);
 
 	// Tell the system the program executed successfully
 	return 0;

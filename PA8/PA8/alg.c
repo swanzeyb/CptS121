@@ -63,8 +63,6 @@ void bubble_sort(char** strings, int length) {
   while (u > 0) {
     c = 1;
     while (c < u) {
-      printf("Debug: %c\n", *strings[c]);
-      printf("Debug: %c\n", *strings[c - 1]);
       if (*strings[c] < *strings[c -1]) {
         char* tmp = strings[c];
         strings[c] = strings[c - 1];
@@ -123,4 +121,42 @@ unsigned int sum_primes(unsigned int to, unsigned int sum) {
     // Decrement until to reaches 2
     return sum_primes(--to, sum);
   }
+}
+
+// int get_occurence_key() {}
+
+Occurrences* maximum_occurences(char* string, Occurrences occurrences[], double* frequeny, char* most_occured) {
+  double str_len = strlen(string);
+  Occurrences* high_occurrences = &occurrences[0];
+
+  for (int i = 0; i < str_len; i++) {
+    char curr = string[i];
+    Occurrences* record = NULL;
+
+    // Make an ordered key
+    int key = 0;
+    if (curr >= '0' && curr <= '9') {
+      key = curr - '0';
+    } else if (curr >= 'A' && curr <= 'Z') {
+      key = 10 + (curr - 'A');
+    } else if (curr >= 'a' && curr <= 'z') {
+      key = 36 + (curr - 'a');
+    } else if (curr == ' ') {
+      key = 63;
+    }
+    record = &occurrences[key];
+    
+    // Update stats
+    record->num_occurrences += 1;
+    record->frequency = record->num_occurrences / str_len;
+
+    // Keep track of highest occurrence
+    if (record->num_occurrences > high_occurrences->num_occurrences) {
+      high_occurrences = record;
+      *most_occured = curr;
+      *frequeny = high_occurrences->frequency;
+    }
+  }
+
+  return high_occurrences;
 }
