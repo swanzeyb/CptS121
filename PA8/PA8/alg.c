@@ -75,3 +75,38 @@ void bubble_sort(char** strings, int length) {
     u--;
   }
 }
+
+int is_palindrome(char* string, int length) {
+  int start_index = 0;
+  int end_index = length - 1;
+  char first_value = string[start_index];
+  char last_value = string[end_index];
+
+  // Determine offset
+  int offset = end_index;
+  char determine_value = last_value;
+  while (determine_value != '\0') {
+    determine_value = string[++offset];
+  }
+  offset -= length;
+  start_index += offset;
+  first_value = string[start_index];
+
+  // Ignore whitespace
+  while (first_value == ' ') {
+    first_value = string[++start_index];
+  }
+  while (last_value == ' ') {
+    last_value = string[--end_index];
+  }
+
+  if (first_value == last_value) {
+    if (start_index == end_index) {
+      return 1;
+    } else {
+      return is_palindrome(string, --length);
+    }
+  }
+
+  return 0;
+}

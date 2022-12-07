@@ -22,5 +22,6 @@
 
 char* my_str_n_cat(char* source, char* sink, int n);
 void bubble_sort(char** strings, int length);
+int is_palindrome(char* string, int length);
 
 #endif
