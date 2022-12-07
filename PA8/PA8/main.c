@@ -10,11 +10,7 @@
 
 int main() {
 
-	char* pali = "race car";
-	char* not_pali = "hi mom";
-
-	printf("%s is a palindrome: %s\n", pali, is_palindrome(pali, 8) == 1 ? "true" : "false");
-	printf("%s is a palindrome: %s\n", not_pali, is_palindrome(not_pali, 6) == 1 ? "true" : "false");
+	printf("%d is the sum of all prime numbers in %d\n", sum_primes(123, 0), 1235);
 
 	// Tell the system the program executed successfully
 	return 0;

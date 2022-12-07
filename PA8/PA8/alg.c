@@ -110,3 +110,17 @@ int is_palindrome(char* string, int length) {
 
   return 0;
 }
+
+unsigned int sum_primes(unsigned int to, unsigned int sum) {
+  // If the current number is prime, add it to the sum
+  if (to % 2 != 0) {
+    sum += to;
+  }
+
+  if (to <= 2) {
+    return sum;
+  } else {
+    // Decrement until to reaches 2
+    return sum_primes(--to, sum);
+  }
+}
